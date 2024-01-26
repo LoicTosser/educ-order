@@ -1,0 +1,14 @@
+google:
+  drive:
+    root-folder-id: "1yKLBeNzySHbzNzqK-lnEDPCqz3jh3G8S"
+
+spring:
+  jackson:
+    default-property-inclusion: non_empty
+logging:
+  level:
+    org:
+      springframework:
+        web: debug
+    com:
+      fasterxml: debug

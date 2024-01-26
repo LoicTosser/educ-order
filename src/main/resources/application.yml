@@ -1,0 +1,7 @@
+google:
+  drive:
+    root-folder-id: 1M9zZNyjo-Zh9GDiwvfmiqGvNo1o5ExMW
+
+spring:
+  jackson:
+    default-property-inclusion: non_empty
