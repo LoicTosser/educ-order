@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class GoogleSheetLocationDistanceRepositoryTest implements WithAssertions {
+class GoogleSheetRideDistanceRepositoryTest implements WithAssertions {
 
-  @Autowired private GoogleSheetLocationDistanceRepository repository;
+  @Autowired private GoogleSheetRideDistanceRepository repository;
   @Autowired private GoogleSheetLocationRepository locationRepository;
 
   @Test
@@ -23,5 +23,13 @@ class GoogleSheetLocationDistanceRepositoryTest implements WithAssertions {
     // Then
     assertThat(distance).contains(20L);
   }
-  ;
+
+  @Test
+  void computeDistanceBetween() {
+    var domicile = locationRepository.findByName("Domicile").orElseThrow();
+    var domicileHosny = locationRepository.findByName("Domicile Hosny").orElseThrow();
+
+    repository.computeDistanceAndStore(
+        new GoogleSheetRideDistanceRepository.Ride(domicile, domicileHosny));
+  }
 }

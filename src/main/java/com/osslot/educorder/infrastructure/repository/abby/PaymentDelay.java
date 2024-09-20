@@ -13,7 +13,6 @@ import lombok.Setter;
 @Setter
 public class PaymentDelay {
 
-    private Integer value;
-    private String other;
-
+  private Integer value;
+  private String other;
 }

@@ -16,7 +16,9 @@ public record Activity(
     PROJECT("Synthèse et projet"),
     CARE("Intervention"),
     SUPERVISION("Supervision"),
-    RESPITE_CARE("Séjour répit");
+    RESPITE_CARE("Séjour répit"),
+    ESS("ESS"),
+    ;
 
     private final String frenchName;
 

@@ -13,6 +13,6 @@ class CreateAPAJHKilometersFilesTest implements WithAssertions {
   @Test
   void execute() {
     // Given - When - Then
-    createAPAJHKilometersFiles.execute(1, 2024);
+    createAPAJHKilometersFiles.execute(2024, 3);
   }
 }

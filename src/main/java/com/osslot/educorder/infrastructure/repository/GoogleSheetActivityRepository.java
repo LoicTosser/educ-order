@@ -7,6 +7,7 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.osslot.educorder.EducOrderApplication;
 import com.osslot.educorder.domain.model.Activity;
+import com.osslot.educorder.domain.model.Location;
 import com.osslot.educorder.domain.repository.ActivityRepository;
 import com.osslot.educorder.domain.repository.LocationRepository;
 import com.osslot.educorder.domain.repository.PatientRepository;
@@ -17,15 +18,18 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -42,15 +46,16 @@ public class GoogleSheetActivityRepository implements ActivityRepository {
   public static final DateTimeFormatter WRITE_DATE_TIME_FORMATTER =
       new DateTimeFormatterBuilder().appendPattern("[dd/MM/yyyy HH:mm:ss]").toFormatter();
   private static final DateTimeFormatter READ_DURATION_FORMATTER =
-          new DateTimeFormatterBuilder()
-                  .appendPattern("[h:mm:ss]")
-                  .appendPattern("[h:mm]")
-                  .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
-                  .toFormatter().withLocale(Locale.FRENCH);
+      new DateTimeFormatterBuilder()
+          .appendPattern("[h:mm:ss]")
+          .appendPattern("[h:mm]")
+          .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
+          .toFormatter()
+          .withLocale(Locale.FRENCH);
 
   private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-  private static final String ACTIVITY_RANGE_READ = "Prises en Charge Test!A2:10000";
-  private static final String ACTIVITY_SHEET_NAME = "Prises en Charge Test!A";
+  private static final String ACTIVITY_RANGE_READ = "Prises en Charge!A2:10000";
+  private static final String ACTIVITY_SHEET_NAME = "Prises en Charge!A";
   public static final ZoneId PARIS_ZONE_ID = ZoneId.of("Europe/Paris");
   private final Sheets service;
   private final GoogleDriveService googleDriveService;
@@ -70,13 +75,23 @@ public class GoogleSheetActivityRepository implements ActivityRepository {
                 GoogleNetHttpTransport.newTrustedTransport(),
                 JSON_FACTORY,
                 googleCredentials.getCredentials(GoogleNetHttpTransport.newTrustedTransport()))
-                .setApplicationName(EducOrderApplication.APPLICATION_NAME)
+            .setApplicationName(EducOrderApplication.APPLICATION_NAME)
             .build();
     this.googleDriveService = googleDriveService;
   }
 
   @Override
   public List<Activity> findAllByMonth(int year, int month) {
+    return findAllFilteredBy(row -> matchMonth(month, year, row));
+  }
+
+  @Override
+  public List<Activity> findAllBetween(ZonedDateTime start, ZonedDateTime end) {
+    return findAllFilteredBy(row -> isBetween(row, start, end));
+  }
+
+  @NotNull
+  private List<Activity> findAllFilteredBy(Predicate<List<Object>> rowFilter) {
     try {
       var response =
           service
@@ -94,7 +109,7 @@ public class GoogleSheetActivityRepository implements ActivityRepository {
                   !row.isEmpty()
                       && row.getFirst() != null
                       && !row.getFirst().toString().trim().isEmpty())
-          .filter(row -> matchMonth(month, year, row))
+          .filter(rowFilter)
           .map(this::fromRow)
           .filter(Optional::isPresent)
           .map(Optional::orElseThrow)
@@ -145,6 +160,16 @@ public class GoogleSheetActivityRepository implements ActivityRepository {
     return null;
   }
 
+  private static boolean isBetween(List<Object> row, ZonedDateTime start, ZonedDateTime end) {
+    var dateTimeAsStr = row.getFirst();
+    if (dateTimeAsStr == null || dateTimeAsStr.toString().trim().isEmpty()) return false;
+    var localDateTime =
+        LocalDateTime.parse(dateTimeAsStr.toString().trim(), READ_DATE_TIME_FORMATTER);
+    var zonedDateTime =
+        ZonedDateTime.ofInstant(localDateTime.atZone(PARIS_ZONE_ID).toInstant(), PARIS_ZONE_ID);
+    return zonedDateTime.isAfter(start) && zonedDateTime.isBefore(end);
+  }
+
   private static boolean matchMonth(int month, int year, List<Object> row) {
     var dateTimeAsStr = row.getFirst();
     if (dateTimeAsStr == null || dateTimeAsStr.toString().trim().isEmpty()) return false;
@@ -165,7 +190,7 @@ public class GoogleSheetActivityRepository implements ActivityRepository {
             .plusMinutes(durationTemporalAccessor.get(ChronoField.MINUTE_OF_HOUR))
             .plusSeconds(durationTemporalAccessor.get(ChronoField.SECOND_OF_MINUTE));
     var patient = patientRepository.findByFullName(row.get(1).toString());
-    var location = locationRepository.findByName(row.get(4).toString());
+    Optional<Location> location = getLocation(row.get(4).toString());
     var activityType = Activity.ActivityType.valueOfFrench(row.get(3).toString());
     if (patient.isEmpty() || location.isEmpty()) {
       log.error("Patient or location not found for row {}", rowValue);
@@ -175,13 +200,28 @@ public class GoogleSheetActivityRepository implements ActivityRepository {
         new Activity(patient.orElseThrow(), date, duration, location.orElseThrow(), activityType));
   }
 
+  private Optional<Location> getLocation(String locationValue) {
+    if (locationValue == null || locationValue.isEmpty()) {
+      return Optional.empty();
+    }
+    var location = locationRepository.findByAddress(locationValue);
+    if (location.isPresent()) {
+      return location;
+    }
+    location = locationRepository.findByName(locationValue);
+    if (location.isPresent()) {
+      return location;
+    }
+    return Optional.of(new Location("", locationValue));
+  }
+
   static List<Object> toRow(Activity activity) {
     return List.of(
         activity.beginDate().format(WRITE_DATE_TIME_FORMATTER),
         activity.patient().fullName(),
         formatDuration(activity.duration()),
         activity.activityType().getFrenchName(),
-        activity.location().name());
+        activity.location().address());
   }
 
   private static String formatDuration(Duration duration) {

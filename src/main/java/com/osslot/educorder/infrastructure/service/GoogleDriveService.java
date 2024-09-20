@@ -9,9 +9,13 @@ import com.osslot.educorder.domain.model.Patient;
 import com.osslot.educorder.infrastructure.repository.GoogleCredentials;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +27,10 @@ import org.springframework.stereotype.Service;
 public class GoogleDriveService {
 
   private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
+
+  private static final java.time.format.DateTimeFormatter FRENCH_DATE_TIME_FORMATTER =
+      DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT, FormatStyle.SHORT)
+          .withLocale(Locale.FRENCH);
   private static final Map<Integer, String> yearFolderIds = new HashMap<>();
   private final Drive driveService;
   private final String rootFolderId;
@@ -48,7 +56,7 @@ public class GoogleDriveService {
     if (yearFolderId == null) {
       return Optional.empty();
     }
-    var existingMonthFolderId = getFolderId(yearFolderId, String.valueOf(month));
+    var existingMonthFolderId = getFolderIdFromCache(yearFolderId, String.valueOf(month));
     if (existingMonthFolderId.isPresent()) {
       return existingMonthFolderId;
     }
@@ -74,8 +82,8 @@ public class GoogleDriveService {
     }
   }
 
-  public Optional<String> getFolderId(String name) {
-    return getFolderId(rootFolderId, name);
+  public Optional<String> getFolderIdFromCache(String name) {
+    return getFolderIdFromCache(rootFolderId, name);
   }
 
   public Optional<String> getFileIdFromCache(String mimeType, String parentFolderId, String name) {
@@ -84,11 +92,11 @@ public class GoogleDriveService {
         fileIds.computeIfAbsent(
             googleFileDescriptor,
             descriptor ->
-                getFiledId(descriptor.mimeType(), descriptor.parentFolderId(), descriptor.name())
+                getFileId(descriptor.mimeType(), descriptor.parentFolderId(), descriptor.name())
                     .orElse(null)));
   }
 
-  private Optional<String> getFiledId(String mimeType, String parentFolderId, String name) {
+  private Optional<String> getFileId(String mimeType, String parentFolderId, String name) {
     String query =
         String.format(
             "mimeType = '%s' and '%s' in parents and name = '%s' and trashed = false",
@@ -119,7 +127,7 @@ public class GoogleDriveService {
     }
   }
 
-  public Optional<String> getFolderId(String parentFolderId, String name) {
+  public Optional<String> getFolderIdFromCache(String parentFolderId, String name) {
     return getFileIdFromCache("application/vnd.google-apps.folder", parentFolderId, name);
   }
 
@@ -128,18 +136,18 @@ public class GoogleDriveService {
     if (yearFolderId == null) {
       return Optional.empty();
     }
-    return getFolderId(yearFolderId, String.valueOf(month));
+    return getFolderIdFromCache(yearFolderId, String.valueOf(month));
   }
 
   private String getYearFolderId(int year) {
     return yearFolderIds.computeIfAbsent(
-        year, aYear -> getFolderId(rootFolderId, aYear.toString()).orElse(null));
+        year, aYear -> getFolderIdFromCache(rootFolderId, aYear.toString()).orElse(null));
   }
 
   public Optional<String> getFacturationSheetId() {
     if (facturationSheetId == null) {
       facturationSheetId =
-          getFolderId("2023")
+          getFolderIdFromCache("2023")
               .flatMap(
                   folderId ->
                       getFileIdFromCache(
@@ -154,7 +162,7 @@ public class GoogleDriveService {
     if (monthFolderId.isEmpty()) {
       return Optional.empty();
     }
-    return getFolderId(monthFolderId.orElseThrow(), patient.firstName());
+    return getFolderIdFromCache(monthFolderId.orElseThrow(), patient.firstName());
   }
 
   public Optional<String> createPatientFolder(Patient patient, int month, int year) {
@@ -174,10 +182,26 @@ public class GoogleDriveService {
     if (patientFolderId.isEmpty()) {
       return Optional.empty();
     }
-    return getFileIdFromCache(
+    return getFileId(
         "application/vnd.google-apps.spreadsheet",
         patientFolderId.orElseThrow(),
         String.format("Frais kilométriques %s %s-%d", patient.fullName(), month, year));
+  }
+
+  public Optional<String> getApajhPatientFileId(
+      Patient patient, ZonedDateTime start, ZonedDateTime end) {
+    var patientFolderId = getPatientFolder(patient, start.getMonthValue(), start.getYear());
+    if (patientFolderId.isEmpty()) {
+      return Optional.empty();
+    }
+    return getFileId(
+        "application/vnd.google-apps.spreadsheet",
+        patientFolderId.orElseThrow(),
+        String.format(
+            "Frais kilométriques %s %s-%s",
+            patient.fullName(),
+            FRENCH_DATE_TIME_FORMATTER.format(start),
+            FRENCH_DATE_TIME_FORMATTER.format(end)));
   }
 
   public Optional<String> createApajhPatientFile(Patient patient, int month, int year) {
@@ -192,7 +216,7 @@ public class GoogleDriveService {
     var templateFileId =
         getFileIdFromCache(
             "application/vnd.google-apps.spreadsheet",
-            getFolderId("Modèles").orElseThrow(),
+            getFolderIdFromCache("Modèles").orElseThrow(),
             "Frais_kilo_APAJH_2023");
     if (templateFileId.isEmpty()) {
       return Optional.empty();
@@ -203,15 +227,62 @@ public class GoogleDriveService {
         String.format("Frais kilométriques %s %s-%d", patient.fullName(), month, year));
   }
 
+  public Optional<String> createApajhPatientFile(
+      Patient patient, ZonedDateTime start, ZonedDateTime end) {
+    var patientFileId = getApajhPatientFileId(patient, start, end);
+    if (patientFileId.isPresent()) {
+      return patientFileId;
+    }
+    var patientFolderId = getPatientFolder(patient, start.getMonthValue(), start.getYear());
+    if (patientFolderId.isEmpty()) {
+      patientFolderId = createPatientFolder(patient, start.getMonthValue(), start.getYear());
+    }
+    var templateFileId =
+        getFileIdFromCache(
+            "application/vnd.google-apps.spreadsheet",
+            getFolderIdFromCache("Modèles").orElseThrow(),
+            "Frais_kilo_APAJH_2023");
+    if (templateFileId.isEmpty()) {
+      return Optional.empty();
+    }
+    return copyFile(
+        templateFileId.orElseThrow(),
+        patientFolderId.orElseThrow(),
+        String.format(
+            "Frais kilométriques %s %s-%s",
+            patient.fullName(),
+            FRENCH_DATE_TIME_FORMATTER.format(start),
+            FRENCH_DATE_TIME_FORMATTER.format(end)));
+  }
+
   private Optional<String> getAdiaphPatientFileId(Patient patient, int month, int year) {
     var patientFolderId = getPatientFolder(patient, month, year);
     if (patientFolderId.isEmpty()) {
       return Optional.empty();
     }
-    return getFileIdFromCache(
-            "application/vnd.google-apps.document",
-            patientFolderId.orElseThrow(),
-            String.format("Feuille des frais kilométriques %s %s %d", patient.fullName(), month, year));
+    return getFileId(
+        "application/vnd.google-apps.document",
+        patientFolderId.orElseThrow(),
+        String.format(
+            "Feuille des frais kilométriques %s %s %d", patient.fullName(), month, year));
+  }
+
+  private Optional<String> getAdiaphPatientFileId(
+      Patient patient, ZonedDateTime start, ZonedDateTime end) {
+    int month = start.getMonthValue();
+    int year = start.getYear();
+    var patientFolderId = getPatientFolder(patient, month, year);
+    if (patientFolderId.isEmpty()) {
+      return Optional.empty();
+    }
+    return getFileId(
+        "application/vnd.google-apps.document",
+        patientFolderId.orElseThrow(),
+        String.format(
+            "Feuille des frais kilométriques %s %s %s",
+            patient.fullName(),
+            FRENCH_DATE_TIME_FORMATTER.format(start),
+            FRENCH_DATE_TIME_FORMATTER.format(end)));
   }
 
   public Optional<String> createAdiaphPatientFile(Patient patient, int month, int year) {
@@ -224,17 +295,48 @@ public class GoogleDriveService {
       patientFolderId = createPatientFolder(patient, month, year);
     }
     var templateFileId =
-            getFileIdFromCache(
-                    "application/vnd.google-apps.document",
-                    getFolderId("Modèles").orElseThrow(),
-                    "Frais_kilo_ADIAPH");
+        getFileId(
+            "application/vnd.google-apps.document",
+            getFolderIdFromCache("Modèles").orElseThrow(),
+            "Frais_kilo_ADIAPH");
     if (templateFileId.isEmpty()) {
       return Optional.empty();
     }
     return copyFile(
-            templateFileId.orElseThrow(),
-            patientFolderId.orElseThrow(),
-            String.format("Feuille des frais kilométriques %s %s %d", patient.fullName(), month, year));
+        templateFileId.orElseThrow(),
+        patientFolderId.orElseThrow(),
+        String.format(
+            "Feuille des frais kilométriques %s %s %d", patient.fullName(), month, year));
+  }
+
+  public Optional<String> createAdiaphPatientFile(
+      Patient patient, ZonedDateTime start, ZonedDateTime end) {
+    var patientFileId = getAdiaphPatientFileId(patient, start, end);
+    if (patientFileId.isPresent()) {
+      return patientFileId;
+    }
+    int month = start.getMonthValue();
+    int year = start.getYear();
+    var patientFolderId = getPatientFolder(patient, month, year);
+    if (patientFolderId.isEmpty()) {
+      patientFolderId = createPatientFolder(patient, month, year);
+    }
+    var templateFileId =
+        getFileId(
+            "application/vnd.google-apps.document",
+            getFolderIdFromCache("Modèles").orElseThrow(),
+            "Frais_kilo_ADIAPH");
+    if (templateFileId.isEmpty()) {
+      return Optional.empty();
+    }
+    return copyFile(
+        templateFileId.orElseThrow(),
+        patientFolderId.orElseThrow(),
+        String.format(
+            "Feuille des frais kilométriques %s %s %s",
+            patient.fullName(),
+            FRENCH_DATE_TIME_FORMATTER.format(start),
+            FRENCH_DATE_TIME_FORMATTER.format(end)));
   }
 
   private Optional<String> copyFile(String fileId, String parentFolderId, String fileName) {

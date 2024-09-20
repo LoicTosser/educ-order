@@ -12,7 +12,7 @@ class GoogleAgendaCalendarRepositoryTest implements WithAssertions {
 
   @Test
   void findAllByMonth() {
-    var activities = repository.fromCalendar(2023, 12);
+    var activities = repository.fromCalendar(2024, 4);
 
     assertThat(activities).isNotEmpty();
   }

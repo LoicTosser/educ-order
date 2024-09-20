@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 public class PaymentMethodUsed {
-    private Integer value;
-    private String other;
-    private Integer priceTotalTax;
+  private Integer value;
+  private String other;
+  private Integer priceTotalTax;
 }

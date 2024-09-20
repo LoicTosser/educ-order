@@ -35,7 +35,7 @@ public class GoogleSheetLocationRepository implements LocationRepository {
                 GoogleNetHttpTransport.newTrustedTransport(),
                 JSON_FACTORY,
                 googleCredentials.getCredentials(GoogleNetHttpTransport.newTrustedTransport()))
-                .setApplicationName(EducOrderApplication.APPLICATION_NAME)
+            .setApplicationName(EducOrderApplication.APPLICATION_NAME)
             .build();
     this.googleDriveService = googleDriveService;
     this.allLocations = initLocations();
@@ -49,6 +49,11 @@ public class GoogleSheetLocationRepository implements LocationRepository {
   @Override
   public Optional<Location> findByName(String name) {
     return allLocations.stream().filter(location -> location.name().equals(name)).findFirst();
+  }
+
+  @Override
+  public Optional<Location> findByAddress(String address) {
+    return allLocations.stream().filter(location -> location.address().equals(address)).findFirst();
   }
 
   private List<Location> initLocations() {

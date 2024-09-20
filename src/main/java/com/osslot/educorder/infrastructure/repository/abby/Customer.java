@@ -12,18 +12,18 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 public class Customer {
-    private String id;
-    private String firstname;
-    private String lastname;
-    private String email;
-    private String address;
-    private String city;
-    private String zipCode;
-    private String country;
-    private Company company;
-    private String token;
-    private boolean tiersPrestationIsActivated;
-    private Company customerCompany;
+  private String id;
+  private String firstname;
+  private String lastname;
+  private String email;
+  private String address;
+  private String city;
+  private String zipCode;
+  private String country;
+  private Company company;
+  private String token;
+  private boolean tiersPrestationIsActivated;
+  private Company customerCompany;
 
-    // getters and setters
+  // getters and setters
 }

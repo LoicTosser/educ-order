@@ -27,6 +27,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -60,10 +61,19 @@ public class GoogleAgendaCalendarRepository implements CalendarRepository {
   @Override
   public List<Activity> fromCalendar(int year, int month) {
     var events = getEvents(year, month);
-    var patients = patientRepository.findAll();
-    var locations = locationRepository.findAll();
     return events.stream()
-        .map(event -> fromEvent(event, patients, locations))
+        .map(this::fromEvent)
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .sorted(Comparator.comparing(Activity::beginDate))
+        .toList();
+  }
+
+  @Override
+  public List<Activity> fromCalendar(ZonedDateTime start, ZonedDateTime end) {
+    var events = getEvents(start, end);
+    return events.stream()
+        .map(this::fromEvent)
         .filter(Optional::isPresent)
         .map(Optional::get)
         .sorted(Comparator.comparing(Activity::beginDate))
@@ -71,11 +81,16 @@ public class GoogleAgendaCalendarRepository implements CalendarRepository {
   }
 
   private List<Event> getEvents(int year, int month) {
+    var dateFrom = getFirstDayOfMonth(year, month);
+    var dateTo = getNextMonthFirstDay(year, month, dateFrom);
+    return getEvents(dateFrom, dateTo);
+  }
+
+  @NotNull
+  private List<Event> getEvents(ZonedDateTime start, ZonedDateTime end) {
     List<Event> monthEvents = new ArrayList<>();
     try {
       // Call the Calendar API
-      var dateFrom = getFirstDayOfMonth(year, month);
-      var dateTo = getNextMonthFirstDay(year, month, dateFrom);
       log.info("Getting the upcoming 10 events");
       String pageToken = null;
       do {
@@ -83,8 +98,8 @@ public class GoogleAgendaCalendarRepository implements CalendarRepository {
             service
                 .events()
                 .list(CALENDAR_ID)
-                .setTimeMin(new DateTime(RFC_3339_FORMATTER.format(dateFrom)))
-                .setTimeMax(new DateTime(RFC_3339_FORMATTER.format(dateTo)))
+                .setTimeMin(new DateTime(RFC_3339_FORMATTER.format(start)))
+                .setTimeMax(new DateTime(RFC_3339_FORMATTER.format(end)))
                 .setPageToken(pageToken)
                 .setMaxResults(10)
                 .setSingleEvents(true)
@@ -98,12 +113,14 @@ public class GoogleAgendaCalendarRepository implements CalendarRepository {
             .getItems()
             .forEach(
                 event -> {
-                  String start = event.getStart().getDateTime().toString();
-                  String end = event.getEnd().getDateTime().toString();
+                  DateTime startDateTime = event.getStart().getDateTime();
+                  String startAsString = startDateTime == null ? null : startDateTime.toString();
+                  DateTime endDateTime = event.getEnd().getDateTime();
+                  String endAsString = endDateTime == null ? null : endDateTime.toString();
                   log.info(
-                      start
+                      startAsString
                           + " "
-                          + end
+                          + endAsString
                           + " "
                           + event.getSummary()
                           + " "
@@ -135,8 +152,7 @@ public class GoogleAgendaCalendarRepository implements CalendarRepository {
         .truncatedTo(ChronoUnit.DAYS);
   }
 
-  public Optional<Activity> fromEvent(
-      Event event, List<Patient> patients, List<Location> locations) {
+  public Optional<Activity> fromEvent(Event event) {
     log.info(
         String.format(
             "Event input: %s, %s, %s",
@@ -145,9 +161,12 @@ public class GoogleAgendaCalendarRepository implements CalendarRepository {
             event.getLocation() != null ? event.getLocation() : "None"));
 
     var activityType = toActivityType(event);
-    var patient = toPatient(event, patients);
-    var location = patient.flatMap(p -> toLocation(event, p, locations));
+    var patient = toPatient(event);
+    var location = toLocation(event);
     if (activityType.isEmpty() || patient.isEmpty() || location.isEmpty()) {
+      return Optional.empty();
+    }
+    if (event.getStart().getDateTime() == null || event.getEnd().getDateTime() == null) {
       return Optional.empty();
     }
     var activityStartDate =
@@ -165,13 +184,16 @@ public class GoogleAgendaCalendarRepository implements CalendarRepository {
             activity.beginDate(),
             activity.duration(),
             activity.patient().fullName(),
-            activity.location().name()));
+            activity.location().address()));
     return Optional.of(activity);
   }
 
-  private Optional<Patient> toPatient(Event event, List<Patient> patients) {
+  private Optional<Patient> toPatient(Event event) {
+    if (event.getSummary() == null) {
+      return Optional.empty();
+    }
     String eventName = event.getSummary().toLowerCase();
-    return patients.stream()
+    return patientRepository.findAll().stream()
         .filter(
             patient ->
                 eventName.contains(patient.firstName().toLowerCase())
@@ -179,28 +201,26 @@ public class GoogleAgendaCalendarRepository implements CalendarRepository {
         .findFirst();
   }
 
-  public Optional<Location> toLocation(Event event, Patient patient, List<Location> locations) {
+  public Optional<Location> toLocation(Event event) {
     String eventLocation = event.getLocation();
-    String eventName = event.getSummary().toLowerCase();
-    Optional<Location> location = Optional.empty();
     if (eventLocation != null) {
-      location =
-          locations.stream().filter(l -> l.name().equalsIgnoreCase(eventLocation)).findFirst();
-    }
-    if (location.isEmpty()) {
-      if (eventName.contains("visio")) {
-        return getDomicile(locations);
+      var location = locationRepository.findByAddress(eventLocation);
+      if (location.isPresent()) {
+        return location;
       }
-      return locations.stream().filter(l -> l.name().contains(patient.firstName())).findFirst();
+      return Optional.of(new Location("", event.getLocation()));
     }
-    return location;
+    return getDomicile();
   }
 
-  public Optional<Location> getDomicile(List<Location> locations) {
-    return locations.stream().filter(location -> location.name().equals("Domicile")).findFirst();
+  public Optional<Location> getDomicile() {
+    return locationRepository.findByName("Domicile");
   }
 
   public Optional<Activity.ActivityType> toActivityType(Event event) {
+    if (event.getSummary() == null) {
+      return Optional.empty();
+    }
     String eventName = event.getSummary().toLowerCase();
     return Arrays.stream(Activity.ActivityType.values())
         .filter(activityType -> eventName.contains(activityType.getFrenchName().toLowerCase()))

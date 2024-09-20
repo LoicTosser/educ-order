@@ -13,7 +13,6 @@ import lombok.Setter;
 @Setter
 public class Opportunity {
 
-    private String id;
-    private String name;
-
+  private String id;
+  private String name;
 }

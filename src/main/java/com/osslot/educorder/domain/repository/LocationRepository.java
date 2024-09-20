@@ -9,4 +9,6 @@ public interface LocationRepository {
   List<Location> findAll();
 
   Optional<Location> findByName(String name);
+
+  Optional<Location> findByAddress(String address);
 }

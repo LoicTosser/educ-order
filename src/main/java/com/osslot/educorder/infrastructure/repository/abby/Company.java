@@ -12,10 +12,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 public class Company {
-    private String id;
-    private String commercialName;
-    private String siret;
-    private String name;
+  private String id;
+  private String commercialName;
+  private String siret;
+  private String name;
 
-    // getters and setters
+  // getters and setters
 }

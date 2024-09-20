@@ -4,6 +4,5 @@ import com.osslot.educorder.domain.model.Order;
 
 public interface OrderRepository {
 
-    Order add(Order order);
-
+  Order add(Order order);
 }

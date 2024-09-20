@@ -8,13 +8,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class CreateADIAPHKilometersFilesTest implements WithAssertions {
 
-    @Autowired
-    private CreateADIAPHKilometersFiles createADIAPHKilometersFiles;
+  @Autowired private CreateADIAPHKilometersFiles createADIAPHKilometersFiles;
 
-    @Test
-    void execute() {
-        // Given - When - Then
-        createADIAPHKilometersFiles.execute(1, 2024);
-    }
-
+  @Test
+  void execute() {
+    // Given - When - Then
+    createADIAPHKilometersFiles.execute(2024, 1);
+  }
 }

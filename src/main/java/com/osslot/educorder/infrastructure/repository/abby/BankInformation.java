@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 public class BankInformation {
-    private String bank;
-    private String iban;
-    private String bic;
+  private String bank;
+  private String iban;
+  private String bic;
 }

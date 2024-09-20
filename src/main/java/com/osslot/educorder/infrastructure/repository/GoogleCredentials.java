@@ -29,7 +29,11 @@ public class GoogleCredentials {
    * your previously saved tokens/ folder.
    */
   private static final List<String> SCOPES =
-      List.of(SheetsScopes.SPREADSHEETS, CalendarScopes.CALENDAR_EVENTS, DriveScopes.DRIVE, DocsScopes.DOCUMENTS);
+      List.of(
+          SheetsScopes.SPREADSHEETS,
+          CalendarScopes.CALENDAR_EVENTS,
+          DriveScopes.DRIVE,
+          DocsScopes.DOCUMENTS);
 
   private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
 
