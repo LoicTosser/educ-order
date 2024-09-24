@@ -1,8 +1,8 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.3.1'
-    id 'io.spring.dependency-management' version '1.1.5'
-    id 'com.diffplug.spotless' version '6.24.0'
+    alias(libs.plugins.springBootPlugin)
+    alias(libs.plugins.springBootDependencyManagementPlugin)
+    alias(libs.plugins.spotlessPlugin)
 }
 
 group = 'com.osslot'
@@ -30,13 +30,13 @@ ext {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-hateoas'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'com.google.api-client:google-api-client:2.6.0'
-    implementation 'com.google.oauth-client:google-oauth-client-jetty:1.36.0'
-    implementation 'com.google.apis:google-api-services-sheets:v4-rev20240514-2.0.0'
-    implementation 'com.google.apis:google-api-services-calendar:v3-rev20240517-2.0.0'
-    implementation 'com.google.apis:google-api-services-drive:v3-rev20240521-2.0.0'
-    implementation 'com.google.apis:google-api-services-docs:v1-rev20230929-2.0.0'
-    implementation 'com.google.maps:google-maps-services:2.2.0'
+    implementation libs.googleApiClient
+    implementation libs.googleOauthClientJetty
+    implementation libs.googleApiSheets
+    implementation libs.googleApiCalendar
+    implementation libs.googleApiDrive
+    implementation libs.googleApiDocs
+    implementation libs.googleMaps
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
