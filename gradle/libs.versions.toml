@@ -6,7 +6,7 @@ spotlessVersion = '6.24.0'
 [libraries]
 googleApiClient = { group = "com.google.api-client", name = "google-api-client", version = "2.7.0" }
 googleOauthClientJetty = { group = "com.google.oauth-client", name = "google-oauth-client-jetty", version = "1.36.0" }
-googleApiSheets = { group = "com.google.apis", name = "google-api-services-sheets", version = "v4-rev20240826-2.0.0" }
+googleApiSheets = { group = "com.google.apis", name = "google-api-services-sheets", version = "v4-rev20240917-2.0.0" }
 googleApiCalendar = { group = "com.google.apis", name = "google-api-services-calendar", version = "v3-rev20240517-2.0.0" }
 googleApiDrive = { group = "com.google.apis", name = "google-api-services-drive", version = "v3-rev20240914-2.0.0" }
 googleApiDocs = { group = "com.google.apis", name = "google-api-services-docs", version = "v1-rev20230929-2.0.0" }
