@@ -3,14 +3,13 @@ package com.osslot.educorder.interfaces;
 import com.osslot.educorder.application.CreateADIAPHKilometersFiles;
 import com.osslot.educorder.application.CreateAPAJHKilometersFiles;
 import com.osslot.educorder.domain.model.Institution;
+import java.time.ZonedDateTime;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.time.ZonedDateTime;
 
 @RestController
 @RequestMapping("/kilometers")
@@ -32,7 +31,7 @@ public class KilometersController {
 
   @PostMapping("{institution}")
   public void createKilometers(
-          @PathVariable Institution institution, @RequestBody KilometersRequest request) {
+      @PathVariable Institution institution, @RequestBody KilometersRequest request) {
     switch (institution) {
       case APAJH -> createAPAJHKilometersFiles.execute(request.start(), request.end());
       case ADIAPH -> createADIAPHKilometersFiles.execute(request.start(), request.end());

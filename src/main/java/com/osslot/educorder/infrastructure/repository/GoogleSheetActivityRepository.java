@@ -221,7 +221,8 @@ public class GoogleSheetActivityRepository implements ActivityRepository {
         activity.patient().fullName(),
         formatDuration(activity.duration()),
         activity.activityType().getFrenchName(),
-        activity.location().address());
+        activity.location().address(),
+        activity.eventId());
   }
 
   private static String formatDuration(Duration duration) {

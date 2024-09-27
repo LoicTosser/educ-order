@@ -3,11 +3,10 @@ package com.osslot.educorder.application;
 import com.osslot.educorder.domain.model.Institution;
 import com.osslot.educorder.domain.repository.ApajhKilometersFilesRepository;
 import com.osslot.educorder.domain.service.ActivityKilometersService;
+import java.time.ZonedDateTime;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.time.ZonedDateTime;
 
 @Service
 @AllArgsConstructor
@@ -32,18 +31,17 @@ public class CreateAPAJHKilometersFiles {
         });
   }
 
-    public void execute(ZonedDateTime start, ZonedDateTime end) {
-        var activitiesKilometersPerPatient =
-                activityKilometersService.getActivitiesKilometersPerPatientBetween(
-                        start, end, Institution.APAJH);
-        activitiesKilometersPerPatient.forEach(
-                (patient, activities) -> {
-                    var patientFileId =
-                            apajhKilometersFilesRepository.createPatientFilesFor(
-                                    start, end, patient, activities);
-                    if (patientFileId.isEmpty()) {
-                        log.warn("Patient file not created for " + patient.fullName());
-                    }
-                });
-    }
+  public void execute(ZonedDateTime start, ZonedDateTime end) {
+    var activitiesKilometersPerPatient =
+        activityKilometersService.getActivitiesKilometersPerPatientBetween(
+            start, end, Institution.APAJH);
+    activitiesKilometersPerPatient.forEach(
+        (patient, activities) -> {
+          var patientFileId =
+              apajhKilometersFilesRepository.createPatientFilesFor(start, end, patient, activities);
+          if (patientFileId.isEmpty()) {
+            log.warn("Patient file not created for " + patient.fullName());
+          }
+        });
+  }
 }

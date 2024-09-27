@@ -152,14 +152,14 @@ public class GoogleAgendaCalendarRepository implements CalendarRepository {
         .truncatedTo(ChronoUnit.DAYS);
   }
 
-  public Optional<Activity> fromEvent(Event event) {
+  private Optional<Activity> fromEvent(Event event) {
     log.info(
-        String.format(
-            "Event input: %s, %s, %s",
-            event.getStart().getDateTime(),
-            event.getSummary(),
-            event.getLocation() != null ? event.getLocation() : "None"));
-
+        "Event input: {}, {}, {}, {}",
+        event.getId(),
+        event.getStart().getDateTime(),
+        event.getSummary(),
+        event.getLocation() != null ? event.getLocation() : "None");
+    var eventId = event.getId();
     var activityType = toActivityType(event);
     var patient = toPatient(event);
     var location = toLocation(event);
@@ -176,15 +176,19 @@ public class GoogleAgendaCalendarRepository implements CalendarRepository {
     var duration = Duration.between(activityStartDate, activityEndDate);
     var activity =
         new Activity(
-            patient.get(), activityStartDate, duration, location.get(), activityType.get());
+            eventId,
+            patient.get(),
+            activityStartDate,
+            duration,
+            location.get(),
+            activityType.get());
     log.info(
-        String.format(
-            "Activity: %s, %s, %s, %s, %s",
-            activity.activityType().getFrenchName(),
-            activity.beginDate(),
-            activity.duration(),
-            activity.patient().fullName(),
-            activity.location().address()));
+        "Activity: {}, {}, {}, {}, {}",
+        activity.activityType().getFrenchName(),
+        activity.beginDate(),
+        activity.duration(),
+        activity.patient().fullName(),
+        activity.location().address());
     return Optional.of(activity);
   }
 
