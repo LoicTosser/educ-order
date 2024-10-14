@@ -1,0 +1,527 @@
+{
+  "docs": [
+    {
+      "id": "6581fb61fd651303fcdde7da",
+      "number": "F-2023120132",
+      "title": "Facture Indemnités Kilométriques Hosny Cacho Décembre 2023",
+      "type": "invoice",
+      "state": "paid",
+      "emittedAt": 1702944000,
+      "dueAt": 1705618799,
+      "customer": {
+        "id": "649acf3552f7ef3543bb4ec7",
+        "firstname": "",
+        "lastname": "",
+        "email": "pcpe@apajh33.fr",
+        "address": "305 boulevard du président Wilson",
+        "city": "BORDEAUX",
+        "zipCode": "33000",
+        "country": "France",
+        "company": {
+          "id": "6568bd9d3a69d43ef1e01a3a",
+          "commercialName": "PCPE TRAIT D' UNION",
+          "siret": "78196349100043",
+          "name": "APAJH AD 33"
+        },
+        "token": "649acf36-3e97-4cf6-ace6-178b9456c804",
+        "tiersPrestationIsActivated": false,
+        "customerCompany": {
+          "id": "6568bd9d3a69d43ef1e01a3a",
+          "commercialName": "PCPE TRAIT D' UNION",
+          "siret": "78196349100043",
+          "name": "APAJH AD 33"
+        }
+      },
+      "opportunity": {
+        "id": "653b6fa0-866d-4d11-92f0-e63fdbd4ad48",
+        "name": "Hosny CACHO GBADESSI KOUANVI"
+      },
+      "paidAt": 1703804400,
+      "remainingAmountWithoutTax": 6348,
+      "remainingAmountWithTax": 7618,
+      "totalAmountWithoutTaxAfterDiscount": 6348,
+      "totalAmountWithTaxAfterDiscount": 7618,
+      "cancelledAmountWithoutTax": 0,
+      "cancelledAmountWithTax": 0,
+      "finalizable": false,
+      "isOnlinePaymentActivated": false,
+      "paymentMethodUsed": [],
+      "tiersPrestationIsActivatedForThisBilling": false,
+      "locale": "fr",
+      "isReminderActivated": false,
+      "lastDownloadAt": 1703163185,
+      "currencyCode": "EUR"
+    },
+    {
+      "id": "6581fac8502efc89dd7c2cb5",
+      "number": "F-2023120131",
+      "title": "Facture Prise En Charge Hosny Cacho Décembre 2023",
+      "type": "invoice",
+      "state": "paid",
+      "emittedAt": 1702944000,
+      "dueAt": 1705618799,
+      "customer": {
+        "id": "649acf3552f7ef3543bb4ec7",
+        "firstname": "",
+        "lastname": "",
+        "email": "pcpe@apajh33.fr",
+        "address": "305 boulevard du président Wilson",
+        "city": "BORDEAUX",
+        "zipCode": "33000",
+        "country": "France",
+        "company": {
+          "id": "6568bd9d3a69d43ef1e01a3a",
+          "commercialName": "PCPE TRAIT D' UNION",
+          "siret": "78196349100043",
+          "name": "APAJH AD 33"
+        },
+        "token": "649acf36-3e97-4cf6-ace6-178b9456c804",
+        "tiersPrestationIsActivated": false,
+        "customerCompany": {
+          "id": "6568bd9d3a69d43ef1e01a3a",
+          "commercialName": "PCPE TRAIT D' UNION",
+          "siret": "78196349100043",
+          "name": "APAJH AD 33"
+        }
+      },
+      "opportunity": {
+        "id": "653b6fa0-866d-4d11-92f0-e63fdbd4ad48",
+        "name": "Hosny CACHO GBADESSI KOUANVI"
+      },
+      "paidAt": 1703804400,
+      "remainingAmountWithoutTax": 19998,
+      "remainingAmountWithTax": 23998,
+      "totalAmountWithoutTaxAfterDiscount": 19998,
+      "totalAmountWithTaxAfterDiscount": 23998,
+      "cancelledAmountWithoutTax": 0,
+      "cancelledAmountWithTax": 0,
+      "finalizable": false,
+      "isOnlinePaymentActivated": false,
+      "paymentMethodUsed": [],
+      "tiersPrestationIsActivatedForThisBilling": false,
+      "locale": "fr",
+      "isReminderActivated": false,
+      "lastDownloadAt": 1703163207,
+      "currencyCode": "EUR"
+    },
+    {
+      "id": "6581f9d1502efc89dd7c29a4",
+      "number": "F-2023120134",
+      "title": "Facture Indemnité Kilométriques Décembre 2023",
+      "type": "invoice",
+      "state": "paid",
+      "emittedAt": 1702944000,
+      "dueAt": 1705618799,
+      "customer": {
+        "id": "649acf3552f7ef3543bb4ec7",
+        "firstname": "",
+        "lastname": "",
+        "email": "pcpe@apajh33.fr",
+        "address": "305 boulevard du président Wilson",
+        "city": "BORDEAUX",
+        "zipCode": "33000",
+        "country": "France",
+        "company": {
+          "id": "6568bd9d3a69d43ef1e01a3a",
+          "commercialName": "PCPE TRAIT D' UNION",
+          "siret": "78196349100043",
+          "name": "APAJH AD 33"
+        },
+        "token": "649acf36-3e97-4cf6-ace6-178b9456c804",
+        "tiersPrestationIsActivated": false,
+        "customerCompany": {
+          "id": "6568bd9d3a69d43ef1e01a3a",
+          "commercialName": "PCPE TRAIT D' UNION",
+          "siret": "78196349100043",
+          "name": "APAJH AD 33"
+        }
+      },
+      "opportunity": {
+        "id": "653b6fc0-e675-453d-a01e-9b49ea91c4e8",
+        "name": "Amalia DE PAPE PORTOCARRERO DE ALMADA E ARY"
+      },
+      "paidAt": 1703804400,
+      "remainingAmountWithoutTax": 2645,
+      "remainingAmountWithTax": 3174,
+      "totalAmountWithoutTaxAfterDiscount": 2645,
+      "totalAmountWithTaxAfterDiscount": 3174,
+      "cancelledAmountWithoutTax": 0,
+      "cancelledAmountWithTax": 0,
+      "finalizable": false,
+      "isOnlinePaymentActivated": false,
+      "paymentMethodUsed": [],
+      "tiersPrestationIsActivatedForThisBilling": false,
+      "locale": "fr",
+      "isReminderActivated": false,
+      "lastDownloadAt": 1703163216,
+      "currencyCode": "EUR"
+    },
+    {
+      "id": "6581f7e54dd5c98247a0fda4",
+      "number": "F-2023120135",
+      "title": "Facture Prise En Charge Rose Neyret Décembre 2023",
+      "type": "invoice",
+      "state": "finalized",
+      "emittedAt": 1702944000,
+      "dueAt": 1705618799,
+      "customer": {
+        "id": "649acf0f6a4a33117be0021b",
+        "firstname": "",
+        "lastname": "",
+        "email": "pcpe.compta@adiaph.fr",
+        "address": "35, rue Carnot",
+        "city": "Langon",
+        "zipCode": "33210",
+        "country": "France",
+        "company": {
+          "id": "6569995f7ad58934208ec23c",
+          "commercialName": "",
+          "siret": "91984780600016",
+          "name": "PCPE ADIAPH"
+        },
+        "token": "649acf10-b000-4582-ba77-559f86b5d119",
+        "tiersPrestationIsActivated": false,
+        "customerCompany": {
+          "id": "6569995f7ad58934208ec23c",
+          "commercialName": "",
+          "siret": "91984780600016",
+          "name": "PCPE ADIAPH"
+        }
+      },
+      "opportunity": {
+        "id": "65295da4-c9df-4ee0-8330-39b597ab8110",
+        "name": "Rose Neyret"
+      },
+      "remainingAmountWithoutTax": 47868,
+      "remainingAmountWithTax": 57442,
+      "totalAmountWithoutTaxAfterDiscount": 47868,
+      "totalAmountWithTaxAfterDiscount": 57442,
+      "cancelledAmountWithoutTax": 0,
+      "cancelledAmountWithTax": 0,
+      "finalizable": false,
+      "isOnlinePaymentActivated": false,
+      "paymentMethodUsed": [],
+      "tiersPrestationIsActivatedForThisBilling": false,
+      "locale": "fr",
+      "isReminderActivated": false,
+      "lastDownloadAt": 1703163237,
+      "currencyCode": "EUR"
+    },
+    {
+      "id": "6581f8a8edf87e0da3f32827",
+      "number": "F-2023120133",
+      "title": "Facture Prise En Charge Amalia De Pape Décembre 2023",
+      "type": "invoice",
+      "state": "paid",
+      "emittedAt": 1702944000,
+      "dueAt": 1705618799,
+      "customer": {
+        "id": "649acf3552f7ef3543bb4ec7",
+        "firstname": "",
+        "lastname": "",
+        "email": "pcpe@apajh33.fr",
+        "address": "305 boulevard du président Wilson",
+        "city": "BORDEAUX",
+        "zipCode": "33000",
+        "country": "France",
+        "company": {
+          "id": "6568bd9d3a69d43ef1e01a3a",
+          "commercialName": "PCPE TRAIT D' UNION",
+          "siret": "78196349100043",
+          "name": "APAJH AD 33"
+        },
+        "token": "649acf36-3e97-4cf6-ace6-178b9456c804",
+        "tiersPrestationIsActivated": false,
+        "customerCompany": {
+          "id": "6568bd9d3a69d43ef1e01a3a",
+          "commercialName": "PCPE TRAIT D' UNION",
+          "siret": "78196349100043",
+          "name": "APAJH AD 33"
+        }
+      },
+      "opportunity": {
+        "id": "653b6fc0-e675-453d-a01e-9b49ea91c4e8",
+        "name": "Amalia DE PAPE PORTOCARRERO DE ALMADA E ARY"
+      },
+      "paidAt": 1705100400,
+      "remainingAmountWithoutTax": 9999,
+      "remainingAmountWithTax": 11999,
+      "totalAmountWithoutTaxAfterDiscount": 9999,
+      "totalAmountWithTaxAfterDiscount": 11999,
+      "cancelledAmountWithoutTax": 0,
+      "cancelledAmountWithTax": 0,
+      "finalizable": false,
+      "isOnlinePaymentActivated": false,
+      "paymentMethodUsed": [],
+      "tiersPrestationIsActivatedForThisBilling": false,
+      "locale": "fr",
+      "isReminderActivated": false,
+      "lastDownloadAt": 1703163228,
+      "currencyCode": "EUR"
+    },
+    {
+      "id": "656999407ad58934208ec107",
+      "number": "F-2023120130",
+      "title": "FACTURE ROSE NEYRET NOVEMBRE 2023",
+      "type": "invoice",
+      "state": "paid",
+      "emittedAt": 1701388800,
+      "dueAt": 1702767599,
+      "customer": {
+        "id": "649acf0f6a4a33117be0021b",
+        "firstname": "",
+        "lastname": "",
+        "email": "pcpe.compta@adiaph.fr",
+        "address": "35, rue Carnot",
+        "city": "Langon",
+        "zipCode": "33210",
+        "country": "France",
+        "company": {
+          "id": "6569995f7ad58934208ec23c",
+          "commercialName": "",
+          "siret": "91984780600016",
+          "name": "PCPE ADIAPH"
+        },
+        "token": "649acf10-b000-4582-ba77-559f86b5d119",
+        "tiersPrestationIsActivated": false,
+        "customerCompany": {
+          "id": "6569995f7ad58934208ec23c",
+          "commercialName": "",
+          "siret": "91984780600016",
+          "name": "PCPE ADIAPH"
+        }
+      },
+      "opportunity": {
+        "id": "65295da4-c9df-4ee0-8330-39b597ab8110",
+        "name": "Rose Neyret"
+      },
+      "paidAt": 1702681200,
+      "remainingAmountWithoutTax": 96806,
+      "remainingAmountWithTax": 116167,
+      "totalAmountWithoutTaxAfterDiscount": 96806,
+      "totalAmountWithTaxAfterDiscount": 116167,
+      "cancelledAmountWithoutTax": 0,
+      "cancelledAmountWithTax": 0,
+      "finalizable": false,
+      "isOnlinePaymentActivated": false,
+      "paymentMethodUsed": [],
+      "tiersPrestationIsActivatedForThisBilling": false,
+      "locale": "fr",
+      "isReminderActivated": false,
+      "currencyCode": "EUR"
+    },
+    {
+      "id": "656896727ad58934208b70fe",
+      "number": "F-2023110129",
+      "title": "FACTURE INDEMNITE KILOMETRIQUES HOSNY CACHO NOVEMBRE 2023",
+      "type": "invoice",
+      "state": "paid",
+      "emittedAt": 1701302400,
+      "dueAt": 1702681199,
+      "customer": {
+        "id": "649acf3552f7ef3543bb4ec7",
+        "firstname": "",
+        "lastname": "",
+        "email": "pcpe@apajh33.fr",
+        "address": "305 boulevard du président Wilson",
+        "city": "BORDEAUX",
+        "zipCode": "33000",
+        "country": "France",
+        "company": {
+          "id": "6568bd9d3a69d43ef1e01a3a",
+          "commercialName": "PCPE TRAIT D' UNION",
+          "siret": "78196349100043",
+          "name": "APAJH AD 33"
+        },
+        "token": "649acf36-3e97-4cf6-ace6-178b9456c804",
+        "tiersPrestationIsActivated": false,
+        "customerCompany": {
+          "id": "6568bd9d3a69d43ef1e01a3a",
+          "commercialName": "PCPE TRAIT D' UNION",
+          "siret": "78196349100043",
+          "name": "APAJH AD 33"
+        }
+      },
+      "opportunity": {
+        "id": "653b6fa0-866d-4d11-92f0-e63fdbd4ad48",
+        "name": "Hosny CACHO GBADESSI KOUANVI"
+      },
+      "paidAt": 1702681200,
+      "remainingAmountWithoutTax": 21160,
+      "remainingAmountWithTax": 25392,
+      "totalAmountWithoutTaxAfterDiscount": 21160,
+      "totalAmountWithTaxAfterDiscount": 25392,
+      "cancelledAmountWithoutTax": 0,
+      "cancelledAmountWithTax": 0,
+      "finalizable": false,
+      "isOnlinePaymentActivated": false,
+      "paymentMethodUsed": [],
+      "tiersPrestationIsActivatedForThisBilling": false,
+      "locale": "fr",
+      "isReminderActivated": false,
+      "currencyCode": "EUR"
+    },
+    {
+      "id": "656895a849282cd41bac8dd7",
+      "number": "F-2023110128",
+      "title": "Facture Prise en charge Hosny CACHO Novembre 2023",
+      "type": "invoice",
+      "state": "paid",
+      "emittedAt": 1701302400,
+      "dueAt": 1702681199,
+      "customer": {
+        "id": "649acf3552f7ef3543bb4ec7",
+        "firstname": "",
+        "lastname": "",
+        "email": "pcpe@apajh33.fr",
+        "address": "305 boulevard du président Wilson",
+        "city": "BORDEAUX",
+        "zipCode": "33000",
+        "country": "France",
+        "company": {
+          "id": "6568bd9d3a69d43ef1e01a3a",
+          "commercialName": "PCPE TRAIT D' UNION",
+          "siret": "78196349100043",
+          "name": "APAJH AD 33"
+        },
+        "token": "649acf36-3e97-4cf6-ace6-178b9456c804",
+        "tiersPrestationIsActivated": false,
+        "customerCompany": {
+          "id": "6568bd9d3a69d43ef1e01a3a",
+          "commercialName": "PCPE TRAIT D' UNION",
+          "siret": "78196349100043",
+          "name": "APAJH AD 33"
+        }
+      },
+      "opportunity": {
+        "id": "653b6fa0-866d-4d11-92f0-e63fdbd4ad48",
+        "name": "Hosny CACHO GBADESSI KOUANVI"
+      },
+      "paidAt": 1702681200,
+      "remainingAmountWithoutTax": 73326,
+      "remainingAmountWithTax": 87991,
+      "totalAmountWithoutTaxAfterDiscount": 73326,
+      "totalAmountWithTaxAfterDiscount": 87991,
+      "cancelledAmountWithoutTax": 0,
+      "cancelledAmountWithTax": 0,
+      "finalizable": false,
+      "isOnlinePaymentActivated": false,
+      "paymentMethodUsed": [],
+      "tiersPrestationIsActivatedForThisBilling": false,
+      "locale": "fr",
+      "isReminderActivated": false,
+      "currencyCode": "EUR"
+    },
+    {
+      "id": "656897260a2fe97122a670d4",
+      "number": "F-2023110127",
+      "title": "FACTURE ROSE NEYRET NOVEMBRE 2023",
+      "type": "invoice",
+      "state": "paid",
+      "emittedAt": 1701302400,
+      "dueAt": 1702681199,
+      "customer": {
+        "id": "649acf0f6a4a33117be0021b",
+        "firstname": "Delphine",
+        "lastname": "CADILLON",
+        "email": "pcpe.compta@adiaph.fr",
+        "address": "35, rue Carnot",
+        "city": "Langon",
+        "zipCode": "33210",
+        "country": "France",
+        "company": {
+          "id": "6568bd7b7ad58934208c3b71",
+          "commercialName": "",
+          "siret": "91984780600016",
+          "name": "PCPE ADIAPH"
+        },
+        "token": "649acf10-b000-4582-ba77-559f86b5d119",
+        "tiersPrestationIsActivated": false,
+        "customerCompany": {
+          "id": "6568bd7b7ad58934208c3b71",
+          "commercialName": "",
+          "siret": "91984780600016",
+          "name": "PCPE ADIAPH"
+        }
+      },
+      "opportunity": {
+        "id": "65295da4-c9df-4ee0-8330-39b597ab8110",
+        "name": "Rose Neyret"
+      },
+      "paidAt": 1702940400,
+      "remainingAmountWithoutTax": 96639,
+      "remainingAmountWithTax": 115967,
+      "totalAmountWithoutTaxAfterDiscount": 96639,
+      "totalAmountWithTaxAfterDiscount": 115967,
+      "cancelledAmountWithoutTax": 96639,
+      "cancelledAmountWithTax": 115967,
+      "finalizable": false,
+      "isOnlinePaymentActivated": false,
+      "paymentMethodUsed": [],
+      "tiersPrestationIsActivatedForThisBilling": false,
+      "locale": "fr",
+      "isReminderActivated": false,
+      "currencyCode": "EUR"
+    },
+    {
+      "id": "6568981a49282cd41bac968f",
+      "number": "F-2023110126",
+      "title": "FACTURE PRISE EN CHARGE AMALIA DE PAPE NOVEMBRE 2023",
+      "type": "invoice",
+      "state": "paid",
+      "emittedAt": 1701302400,
+      "dueAt": 1702681199,
+      "customer": {
+        "id": "649acf3552f7ef3543bb4ec7",
+        "firstname": "",
+        "lastname": "",
+        "email": "pcpe@apajh33.fr",
+        "address": "305 boulevard du président Wilson",
+        "city": "BORDEAUX",
+        "zipCode": "33000",
+        "country": "France",
+        "company": {
+          "id": "6568bd9d3a69d43ef1e01a3a",
+          "commercialName": "PCPE TRAIT D' UNION",
+          "siret": "78196349100043",
+          "name": "APAJH AD 33"
+        },
+        "token": "649acf36-3e97-4cf6-ace6-178b9456c804",
+        "tiersPrestationIsActivated": false,
+        "customerCompany": {
+          "id": "6568bd9d3a69d43ef1e01a3a",
+          "commercialName": "PCPE TRAIT D' UNION",
+          "siret": "78196349100043",
+          "name": "APAJH AD 33"
+        }
+      },
+      "opportunity": {
+        "id": "653b6fc0-e675-453d-a01e-9b49ea91c4e8",
+        "name": "Amalia DE PAPE PORTOCARRERO DE ALMADA E ARY"
+      },
+      "paidAt": 1702681200,
+      "remainingAmountWithoutTax": 24998,
+      "remainingAmountWithTax": 29998,
+      "totalAmountWithoutTaxAfterDiscount": 24998,
+      "totalAmountWithTaxAfterDiscount": 29998,
+      "cancelledAmountWithoutTax": 0,
+      "cancelledAmountWithTax": 0,
+      "finalizable": false,
+      "isOnlinePaymentActivated": false,
+      "paymentMethodUsed": [],
+      "tiersPrestationIsActivatedForThisBilling": false,
+      "locale": "fr",
+      "isReminderActivated": false,
+      "currencyCode": "EUR"
+    }
+  ],
+  "countWithoutFilters": 16,
+  "totalDocs": 16,
+  "limit": 10,
+  "totalPages": 2,
+  "hasNextPage": true,
+  "hasPrevPage": false,
+  "nextPage": 2,
+  "page": 1,
+  "prevPage": null
+}

@@ -12,3 +12,6 @@ logging:
         web: debug
     com:
       fasterxml: debug
+abby:
+  api:
+    key: default-value

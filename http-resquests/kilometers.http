@@ -1,0 +1,19 @@
+### ADIAPH
+POST http://localhost:8080/kilometers/ADIAPH/2024/7
+Accept: application/json
+Content-Type: application/json
+
+### APAJH
+POST http://localhost:8080/kilometers/APAJH/2024/9
+Accept: application/json
+Content-Type: application/json
+
+### Between 2 dates from calendar
+POST http://localhost:8080/kilometers/ADIAPH
+Accept: application/json
+Content-Type: application/json
+
+{
+  "start": "2024-09-01T00:00:00+00:00",
+  "end": "2024-10-01T00:00:00+00:00"
+}

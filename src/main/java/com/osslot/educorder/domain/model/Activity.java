@@ -2,6 +2,8 @@ package com.osslot.educorder.domain.model;
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
+import java.util.UUID;
+
 import lombok.Getter;
 
 public record Activity(
@@ -18,7 +20,7 @@ public record Activity(
       Duration duration,
       Location location,
       ActivityType activityType) {
-    this("", patient, beginDate, duration, location, activityType);
+    this(UUID.randomUUID().toString(), patient, beginDate, duration, location, activityType);
   }
 
   @Getter

@@ -5,3 +5,12 @@ google:
 spring:
   jackson:
     default-property-inclusion: non_empty
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 683700653292-7f4750iff8ujelfare6s56qbq0416jq9.apps.googleusercontent.com
+abby:
+  api:
+    key: default-value
