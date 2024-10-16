@@ -9,16 +9,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class OrderService {
 
-  private final ActivityRepository activityRepository;
+  private final ActivityRepository googleSheetActivityRepository;
   private final OrderRepository orderRepository;
 
-  public OrderService(ActivityRepository activityRepository, OrderRepository orderRepository) {
-    this.activityRepository = activityRepository;
+  public OrderService(
+      ActivityRepository googleSheetActivityRepository, OrderRepository orderRepository) {
+    this.googleSheetActivityRepository = googleSheetActivityRepository;
     this.orderRepository = orderRepository;
   }
 
   public List<Order> createOrdersForMonth(int year, int month) {
-    var activities = activityRepository.findAllByMonth(year, month);
+    var activities = googleSheetActivityRepository.findAllByMonth(year, month);
     /* TODO group by patient */
     /* TODO order from activity */
     /* TODO create orders by patient */

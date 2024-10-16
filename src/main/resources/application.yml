@@ -5,6 +5,9 @@ google:
 spring:
   jackson:
     default-property-inclusion: non_empty
+    serialization:
+      write-dates-as-timestamps: false
+      indent-output: true
   security:
     oauth2:
       client:

@@ -3,16 +3,17 @@ package com.osslot.educorder.domain.model;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.UUID;
-
 import lombok.Getter;
 
 public record Activity(
+    String id,
     String eventId,
     Patient patient,
     ZonedDateTime beginDate,
     Duration duration,
     Location location,
-    ActivityType activityType) {
+    ActivityType activityType,
+    ActivityStatus status) {
 
   public Activity(
       Patient patient,
@@ -20,7 +21,19 @@ public record Activity(
       Duration duration,
       Location location,
       ActivityType activityType) {
-    this(UUID.randomUUID().toString(), patient, beginDate, duration, location, activityType);
+    this(
+        UUID.randomUUID().toString(),
+        UUID.randomUUID().toString(),
+        patient,
+        beginDate,
+        duration,
+        location,
+        activityType,
+        ActivityStatus.CONFIRMED);
+  }
+
+  public boolean isCancelled() {
+    return status == ActivityStatus.CANCELLED;
   }
 
   @Getter
@@ -48,5 +61,11 @@ public record Activity(
       }
       throw new IllegalArgumentException("Invalid french name " + frenchName);
     }
+  }
+
+  public enum ActivityStatus {
+    CONFIRMED,
+    CANCELLED,
+    TENTATIVE
   }
 }

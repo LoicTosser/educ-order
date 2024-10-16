@@ -6,7 +6,11 @@ import java.util.List;
 
 public interface CalendarRepository {
 
-  List<Activity> fromCalendar(int year, int month);
+  FetchCalendarActivitiesResponse fromCalendar(int year, int month);
 
-  List<Activity> fromCalendar(ZonedDateTime start, ZonedDateTime end);
+  FetchCalendarActivitiesResponse fromCalendar(ZonedDateTime start, ZonedDateTime end);
+
+  FetchCalendarActivitiesResponse fromLastSync(String nextSyncToken);
+
+  record FetchCalendarActivitiesResponse(List<Activity> activities, String nextSyncToken) {}
 }

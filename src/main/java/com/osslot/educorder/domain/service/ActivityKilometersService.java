@@ -34,10 +34,10 @@ public class ActivityKilometersService {
       Set.of(ActivityType.CARE, ActivityType.MEETING, ActivityType.RESPITE_CARE);
 
   public ActivityKilometersService(
-      ActivityRepository activityRepository,
+      ActivityRepository googleSheetActivityRepository,
       LocationRepository locationRepository,
       RideDistanceRepository rideDistanceRepository) {
-    this.activityRepository = activityRepository;
+    this.activityRepository = googleSheetActivityRepository;
     this.rideDistanceRepository = rideDistanceRepository;
     this.homeLocation = locationRepository.findByName(HOME_LOCATION_NAME).orElseThrow();
   }

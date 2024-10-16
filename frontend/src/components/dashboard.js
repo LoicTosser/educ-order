@@ -7,7 +7,7 @@ class Activities extends Component {
     };
 
     async componentDidMount() {
-        const response = await fetch('/activities?start=2024-09-01T00:00:00Z&end=2024-10-01T00:00:00Z');
+        const response = await fetch('/activities?start=2024-10-01T00:00:00Z&end=2024-10-31T23:59:59Z');
         const body = await response.json();
         this.setState({activities: body});
     }

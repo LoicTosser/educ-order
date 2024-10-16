@@ -11,4 +11,6 @@ public interface ActivityRepository {
   List<Activity> findAllBetween(ZonedDateTime start, ZonedDateTime end);
 
   List<Activity> add(List<Activity> activities);
+
+  List<Activity> synchronyze(List<Activity> activities);
 }

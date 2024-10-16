@@ -40,9 +40,13 @@ dependencies {
     implementation libs.googleApiDrive
     implementation libs.googleApiDocs
     implementation libs.googleMaps
+    implementation libs.fireBaseAdmin
+    implementation libs.gcloudTestContainers
+
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation libs.instancio
 }
 
 dependencyManagement {

@@ -2,6 +2,7 @@ package com.osslot.educorder.application;
 
 import com.osslot.educorder.domain.repository.ActivityRepository;
 import com.osslot.educorder.domain.repository.CalendarRepository;
+import com.osslot.educorder.domain.repository.CalendarRepository.FetchCalendarActivitiesResponse;
 import java.time.ZonedDateTime;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,15 +12,23 @@ import org.springframework.stereotype.Service;
 public class ImportActivitiesFromCalendar {
 
   private final CalendarRepository calendarRepository;
-  private final ActivityRepository activityRepository;
+  private final ActivityRepository fireStoreActivityRepository;
 
-  public void importActivities(int year, int month) {
-    var activities = calendarRepository.fromCalendar(year, month);
-    activityRepository.add(activities);
+  public FetchCalendarActivitiesResponse importActivities(int year, int month) {
+    var fetchCalendarActivitiesResponse = calendarRepository.fromCalendar(year, month);
+    fireStoreActivityRepository.add(fetchCalendarActivitiesResponse.activities());
+    return fetchCalendarActivitiesResponse;
   }
 
-  public void importActivities(ZonedDateTime start, ZonedDateTime end) {
-    var activities = calendarRepository.fromCalendar(start, end);
-    activityRepository.add(activities);
+  public FetchCalendarActivitiesResponse importActivities(ZonedDateTime start, ZonedDateTime end) {
+    var fetchCalendarActivitiesResponse = calendarRepository.fromCalendar(start, end);
+    fireStoreActivityRepository.add(fetchCalendarActivitiesResponse.activities());
+    return fetchCalendarActivitiesResponse;
+  }
+
+  public FetchCalendarActivitiesResponse synchronize(String nextSyncToken) {
+    var fetchCalendarActivitiesResponse = calendarRepository.fromLastSync(nextSyncToken);
+    fireStoreActivityRepository.synchronyze(fetchCalendarActivitiesResponse.activities());
+    return fetchCalendarActivitiesResponse;
   }
 }

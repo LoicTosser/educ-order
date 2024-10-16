@@ -160,6 +160,11 @@ public class GoogleSheetActivityRepository implements ActivityRepository {
     return null;
   }
 
+  @Override
+  public List<Activity> synchronyze(List<Activity> activities) {
+    return List.of();
+  }
+
   private static boolean isBetween(List<Object> row, ZonedDateTime start, ZonedDateTime end) {
     var dateTimeAsStr = row.getFirst();
     if (dateTimeAsStr == null || dateTimeAsStr.toString().trim().isEmpty()) return false;
