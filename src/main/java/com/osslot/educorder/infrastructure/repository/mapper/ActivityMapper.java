@@ -1,22 +1,18 @@
 package com.osslot.educorder.infrastructure.repository.mapper;
 
 import com.google.api.services.calendar.model.Event;
-import com.google.api.services.calendar.model.EventDateTime;
 import com.osslot.educorder.domain.model.Activity;
 import com.osslot.educorder.domain.model.Location;
 import com.osslot.educorder.domain.model.Patient;
+import com.osslot.educorder.domain.model.UserSettings.User;
 import com.osslot.educorder.domain.repository.LocationRepository;
 import com.osslot.educorder.domain.repository.PatientRepository;
 import java.time.Duration;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.ResolverStyle;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,7 +23,7 @@ public class ActivityMapper {
   private final PatientRepository patientRepository;
   private final LocationRepository locationRepository;
 
-  public Optional<Activity> fromEvent(Event event) {
+  public Optional<Activity> fromEvent(User user, Event event) {
     log.info(
         "Event input: {}, {}, {}, {}",
         event.getId(),
@@ -48,14 +44,13 @@ public class ActivityMapper {
       log.warn("not considering event with missing start or end date");
       return Optional.empty();
     }
-    var activityStartDate =
-            EventDateTimeMapper.toZonedDateTime(event.getStart());
-    var activityEndDate =
-            EventDateTimeMapper.toZonedDateTime(event.getEnd());
+    var activityStartDate = EventDateTimeMapper.toZonedDateTime(event.getStart());
+    var activityEndDate = EventDateTimeMapper.toZonedDateTime(event.getEnd());
     var duration = Duration.between(activityStartDate, activityEndDate);
     var activity =
         new Activity(
             UUID.randomUUID().toString(),
+            user,
             eventId,
             patient.get(),
             activityStartDate,
@@ -66,8 +61,6 @@ public class ActivityMapper {
     log.info("Activity: {}", activity);
     return Optional.of(activity);
   }
-
-
 
   private Optional<Patient> toPatient(Event event) {
     if (event.getSummary() == null) {

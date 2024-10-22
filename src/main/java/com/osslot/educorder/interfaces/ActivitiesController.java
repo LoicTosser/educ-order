@@ -3,6 +3,7 @@ package com.osslot.educorder.interfaces;
 import com.osslot.educorder.application.ImportActivitiesFromCalendar;
 import com.osslot.educorder.application.ListActivities;
 import com.osslot.educorder.domain.model.Activity;
+import com.osslot.educorder.domain.service.AuthenticationService;
 import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -24,15 +25,18 @@ public class ActivitiesController {
 
   private final ImportActivitiesFromCalendar importActivitiesFromCalendar;
   private final ListActivities listActivities;
+  private final AuthenticationService authenticationService;
 
   @PostMapping("{year}/{month}")
   public void importMonthActivities(@PathVariable int year, @PathVariable int month) {
-    importActivitiesFromCalendar.importActivities(year, month);
+    var user = authenticationService.getCurrentUser();
+    importActivitiesFromCalendar.importActivities(user.id(), year, month);
   }
 
   @PostMapping()
   public void importActivities(@RequestBody @Validated ImportActivitiesRequest request) {
-    importActivitiesFromCalendar.importActivities(request.start(), request.end());
+    var user = authenticationService.getCurrentUser();
+    importActivitiesFromCalendar.importActivities(user.id(), request.start(), request.end());
   }
 
   @GetMapping()
@@ -41,6 +45,7 @@ public class ActivitiesController {
           ZonedDateTime start,
       @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam @NonNull
           ZonedDateTime end) {
+    var user = authenticationService.getCurrentUser();
     return listActivities.listActivities(start, end);
   }
 

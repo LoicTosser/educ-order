@@ -1,5 +1,6 @@
 package com.osslot.educorder.domain.model;
 
+import com.osslot.educorder.domain.model.UserSettings.User;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -7,6 +8,7 @@ import lombok.Getter;
 
 public record Activity(
     String id,
+    User user,
     String eventId,
     Patient patient,
     ZonedDateTime beginDate,
@@ -16,6 +18,7 @@ public record Activity(
     ActivityStatus status) {
 
   public Activity(
+      User user,
       Patient patient,
       ZonedDateTime beginDate,
       Duration duration,
@@ -23,6 +26,7 @@ public record Activity(
       ActivityType activityType) {
     this(
         UUID.randomUUID().toString(),
+        user,
         UUID.randomUUID().toString(),
         patient,
         beginDate,

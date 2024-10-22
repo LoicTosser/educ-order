@@ -15,7 +15,7 @@ public class FireStoreConfiguration {
   private static final FirestoreEmulatorContainer firestoreEmulatorContainer =
       new FirestoreEmulatorContainer(
           DockerImageName.parse(
-              "gcr.io/google.com/cloudsdktool/google-cloud-cli:488.0.0-emulators"));
+              "gcr.io/google.com/cloudsdktool/google-cloud-cli:497.0.0-emulators"));
 
   @Bean
   public Firestore firestore() {

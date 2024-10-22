@@ -8,6 +8,7 @@ import com.google.api.services.sheets.v4.model.ValueRange;
 import com.osslot.educorder.EducOrderApplication;
 import com.osslot.educorder.domain.model.Activity;
 import com.osslot.educorder.domain.model.Location;
+import com.osslot.educorder.domain.model.UserSettings.User;
 import com.osslot.educorder.domain.repository.ActivityRepository;
 import com.osslot.educorder.domain.repository.LocationRepository;
 import com.osslot.educorder.domain.repository.PatientRepository;
@@ -202,7 +203,13 @@ public class GoogleSheetActivityRepository implements ActivityRepository {
       return Optional.empty();
     }
     return Optional.of(
-        new Activity(patient.orElseThrow(), date, duration, location.orElseThrow(), activityType));
+        new Activity(
+            new User(null, null, null),
+            patient.orElseThrow(),
+            date,
+            duration,
+            location.orElseThrow(),
+            activityType));
   }
 
   private Optional<Location> getLocation(String locationValue) {
