@@ -12,6 +12,6 @@ class ImportActivitiesFromCalendarTest implements WithAssertions {
 
   @Test
   void importActivities_whenActivitiesInCalendar_WriteThemInGSheetFile() {
-    importActivitiesFromCalendar.importActivities(2024, 3);
+    importActivitiesFromCalendar.importActivities("1234", 2024, 3);
   }
 }

@@ -6,6 +6,7 @@ import com.osslot.educorder.domain.model.ActivityKilometers;
 import com.osslot.educorder.domain.model.Institution;
 import com.osslot.educorder.domain.model.Location;
 import com.osslot.educorder.domain.model.Patient;
+import com.osslot.educorder.domain.model.UserSettings.User;
 import com.osslot.educorder.domain.repository.ActivityRepository;
 import com.osslot.educorder.domain.repository.LocationRepository;
 import com.osslot.educorder.domain.repository.RideDistanceRepository;
@@ -59,8 +60,8 @@ public class ActivityKilometersService {
   }
 
   public Map<Patient, List<ActivityKilometers>> getActivitiesKilometersPerPatientBetween(
-      ZonedDateTime start, ZonedDateTime end, Institution institution) {
-    var activitiesKilometers = getActivitiesKilometersBy(start, end, institution);
+      User user, ZonedDateTime start, ZonedDateTime end, Institution institution) {
+    var activitiesKilometers = getActivitiesKilometersBy(user, start, end, institution);
     return activitiesKilometers.collect(
         Collectors.toMap(
             activityKilometers -> activityKilometers.activity().patient(),
@@ -69,8 +70,8 @@ public class ActivityKilometersService {
   }
 
   public Stream<ActivityKilometers> getActivitiesKilometersBy(
-      ZonedDateTime start, ZonedDateTime end, Institution institution) {
-    var activities = activityRepository.findAllBetween(start, end);
+      User user, ZonedDateTime start, ZonedDateTime end, Institution institution) {
+    var activities = activityRepository.findAllBetween(user, start, end);
     return getActivityKilometers(institution, activities);
   }
 

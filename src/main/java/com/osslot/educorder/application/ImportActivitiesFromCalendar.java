@@ -22,6 +22,7 @@ public class ImportActivitiesFromCalendar {
 
   private final CalendarRepository calendarRepository;
   private final ActivityRepository fireStoreActivityRepository;
+  private final ActivityRepository googleSheetActivityRepository;
   private final UserSettingsRepository userSettingsRepository;
   private final ActivitySyncTokenRepository activitySyncTokenRepository;
 
@@ -37,17 +38,29 @@ public class ImportActivitiesFromCalendar {
     return fetchCalendarActivitiesResponse;
   }
 
+  public FetchCalendarActivitiesResponse importActivitiesToGoogleSheet(
+      String userId, ZonedDateTime start, ZonedDateTime end) {
+    var fetchCalendarActivitiesResponse = fetchCalendarActivities(userId, start, end);
+    googleSheetActivityRepository.add(fetchCalendarActivitiesResponse.activities());
+    return fetchCalendarActivitiesResponse;
+  }
+
   public FetchCalendarActivitiesResponse importActivities(
+      String userId, ZonedDateTime start, ZonedDateTime end) {
+    var fetchCalendarActivitiesResponse = fetchCalendarActivities(userId, start, end);
+    fireStoreActivityRepository.add(fetchCalendarActivitiesResponse.activities());
+    return fetchCalendarActivitiesResponse;
+  }
+
+  private FetchCalendarActivitiesResponse fetchCalendarActivities(
       String userId, ZonedDateTime start, ZonedDateTime end) {
     var userSettings = userSettingsRepository.findByUserId(userId);
     if (userSettings.isEmpty()) {
       return new FetchCalendarActivitiesResponse(List.of(), null, new User(userId, null, null));
     }
     var calendarId = userSettings.orElseThrow().googleCalendarSettings().calendarId();
-    var fetchCalendarActivitiesResponse =
-        calendarRepository.fromCalendar(userSettings.orElseThrow().user(), calendarId, start, end);
-    fireStoreActivityRepository.add(fetchCalendarActivitiesResponse.activities());
-    return fetchCalendarActivitiesResponse;
+    return calendarRepository.fromCalendar(
+        userSettings.orElseThrow().user(), calendarId, start, end);
   }
 
   public void syncActivities() {
@@ -57,7 +70,9 @@ public class ImportActivitiesFromCalendar {
           log.info("Syncing activities from calendar for user {}", userSettings.user());
           var nextSyncToken =
               activitySyncTokenRepository.getCurrentActivitySyncToken(userSettings.user());
-          if (nextSyncToken.isEmpty() || nextSyncToken.get().syncToken() == null || nextSyncToken.get().syncToken().isEmpty()) {
+          if (nextSyncToken.isEmpty()
+              || nextSyncToken.get().syncToken() == null
+              || nextSyncToken.get().syncToken().isEmpty()) {
             log.info("Sync token is null, first init");
             init(userSettings);
             return;

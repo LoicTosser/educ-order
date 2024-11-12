@@ -1,15 +1,14 @@
 package com.osslot.educorder.infrastructure.repository;
 
-import com.google.cloud.Timestamp;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.Query;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.osslot.educorder.domain.model.Activity;
+import com.osslot.educorder.domain.model.UserSettings.User;
 import com.osslot.educorder.domain.repository.ActivityRepository;
 import com.osslot.educorder.infrastructure.repository.entity.ActivityEntity;
-import java.time.Duration;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -34,18 +33,18 @@ public class FireStoreActivityRepository implements ActivityRepository {
   }
 
   @Override
-  public List<Activity> findAllBetween(ZonedDateTime start, ZonedDateTime end) {
+  public List<Activity> findAllBetween(User user, ZonedDateTime start, ZonedDateTime end) {
     var startUTC = start.withZoneSameInstant(ZoneOffset.UTC);
     var endUTC = end.withZoneSameInstant(ZoneOffset.UTC);
-    var durationInSecond = Duration.between(startUTC, endUTC).getSeconds();
     try {
       var querySnapshot =
           firestore
               .collection(ActivityEntity.PATH)
+              .whereEqualTo("userEntity.id", user.id())
               .whereGreaterThanOrEqualTo(
                   "beginDate",
-                  Timestamp.ofTimeSecondsAndNanos(startUTC.getSecond(), start.getNano()))
-              .whereLessThanOrEqualTo("durationInSeconds", durationInSecond)
+                  startUTC.toInstant())
+              .whereLessThanOrEqualTo("endDate", endUTC.toInstant())
               .get()
               .get();
       return querySnapshot.getDocuments().stream()

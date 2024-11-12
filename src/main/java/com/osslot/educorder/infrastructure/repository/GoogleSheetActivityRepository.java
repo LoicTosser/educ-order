@@ -87,7 +87,7 @@ public class GoogleSheetActivityRepository implements ActivityRepository {
   }
 
   @Override
-  public List<Activity> findAllBetween(ZonedDateTime start, ZonedDateTime end) {
+  public List<Activity> findAllBetween(User user, ZonedDateTime start, ZonedDateTime end) {
     return findAllFilteredBy(row -> isBetween(row, start, end));
   }
 

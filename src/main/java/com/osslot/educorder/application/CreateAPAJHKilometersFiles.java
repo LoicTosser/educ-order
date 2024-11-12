@@ -1,6 +1,7 @@
 package com.osslot.educorder.application;
 
 import com.osslot.educorder.domain.model.Institution;
+import com.osslot.educorder.domain.model.UserSettings.User;
 import com.osslot.educorder.domain.repository.ApajhKilometersFilesRepository;
 import com.osslot.educorder.domain.service.ActivityKilometersService;
 import java.time.ZonedDateTime;
@@ -31,10 +32,10 @@ public class CreateAPAJHKilometersFiles {
         });
   }
 
-  public void execute(ZonedDateTime start, ZonedDateTime end) {
+  public void execute(User user, ZonedDateTime start, ZonedDateTime end) {
     var activitiesKilometersPerPatient =
         activityKilometersService.getActivitiesKilometersPerPatientBetween(
-            start, end, Institution.APAJH);
+            user, start, end, Institution.APAJH);
     activitiesKilometersPerPatient.forEach(
         (patient, activities) -> {
           var patientFileId =

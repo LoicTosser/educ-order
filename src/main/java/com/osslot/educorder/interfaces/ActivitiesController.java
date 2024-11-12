@@ -1,14 +1,19 @@
 package com.osslot.educorder.interfaces;
 
+import com.osslot.educorder.application.GetActivitiesSummaries;
 import com.osslot.educorder.application.ImportActivitiesFromCalendar;
 import com.osslot.educorder.application.ListActivities;
 import com.osslot.educorder.domain.model.Activity;
+import com.osslot.educorder.domain.model.ActivitySummaries;
 import com.osslot.educorder.domain.service.AuthenticationService;
+import com.osslot.educorder.interfaces.mapper.UserMapper;
 import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.lang.NonNull;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,19 +29,24 @@ import org.springframework.web.bind.annotation.RestController;
 public class ActivitiesController {
 
   private final ImportActivitiesFromCalendar importActivitiesFromCalendar;
+  private final GetActivitiesSummaries getActivitiesSummaries;
   private final ListActivities listActivities;
   private final AuthenticationService authenticationService;
 
   @PostMapping("{year}/{month}")
-  public void importMonthActivities(@PathVariable int year, @PathVariable int month) {
+  public void importMonthActivities(
+      @PathVariable int year,
+      @PathVariable int month) {
     var user = authenticationService.getCurrentUser();
     importActivitiesFromCalendar.importActivities(user.id(), year, month);
   }
 
   @PostMapping()
-  public void importActivities(@RequestBody @Validated ImportActivitiesRequest request) {
+  public void importActivities(
+      @RequestBody @Validated ImportActivitiesRequest request) {
     var user = authenticationService.getCurrentUser();
-    importActivitiesFromCalendar.importActivities(user.id(), request.start(), request.end());
+    importActivitiesFromCalendar.importActivitiesToGoogleSheet(
+        user.id(), request.start(), request.end());
   }
 
   @GetMapping()
@@ -46,7 +56,17 @@ public class ActivitiesController {
       @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam @NonNull
           ZonedDateTime end) {
     var user = authenticationService.getCurrentUser();
-    return listActivities.listActivities(start, end);
+    return listActivities.listActivities(user, start, end);
+  }
+
+  @GetMapping("/summary")
+  public ActivitySummaries getActivitySummaries(
+      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @NonNull
+          ZonedDateTime start,
+      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @RequestParam @NonNull
+          ZonedDateTime end) {
+    var user = authenticationService.getCurrentUser();
+    return getActivitiesSummaries.getActivitiesSummaries(user, start, end);
   }
 
   public record ImportActivitiesRequest(@NonNull ZonedDateTime start, @NonNull ZonedDateTime end) {}

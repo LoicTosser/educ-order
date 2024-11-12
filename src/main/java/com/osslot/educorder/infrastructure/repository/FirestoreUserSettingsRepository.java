@@ -25,8 +25,7 @@ public class FirestoreUserSettingsRepository implements UserSettingsRepository {
   public static final String CALENDAR_ID =
       "b32341848b6870ac8899d82601c990e3146d29a36cc404a6df2bfc6aa893c9ae@group.calendar.google.com";
 
-  private static final Map<String, UserSettings> userSettingsCache =
-      new ConcurrentHashMap<>();
+  private static final Map<String, UserSettings> userSettingsCache = new ConcurrentHashMap<>();
   private static final List<UserSettings> googleCalendarSynchoEnabledCache = new ArrayList<>();
 
   @PostConstruct
@@ -42,26 +41,27 @@ public class FirestoreUserSettingsRepository implements UserSettingsRepository {
   }
 
   public Optional<UserSettings> findByUserId(String userId) {
-    return Optional.ofNullable(userSettingsCache.computeIfAbsent(
-        userId,
-        aUserId -> {
-          try {
-            var userSettingsEntities =
-                firestore
-                    .collection(UserSettingsEntity.PATH)
-                    .whereEqualTo("user.id", userId)
-                    .get()
-                    .get()
-                    .toObjects(UserSettingsEntity.class);
-            if (userSettingsEntities.isEmpty()) {
-              return null;
-            }
-            return userSettingsEntities.getFirst().toDomain();
-          } catch (InterruptedException | ExecutionException e) {
-            log.error("Error fetching user settings", e);
-            return null;
-          }
-        }));
+    return Optional.ofNullable(
+        userSettingsCache.computeIfAbsent(
+            userId,
+            aUserId -> {
+              try {
+                var userSettingsEntities =
+                    firestore
+                        .collection(UserSettingsEntity.PATH)
+                        .whereEqualTo("user.id", userId)
+                        .get()
+                        .get()
+                        .toObjects(UserSettingsEntity.class);
+                if (userSettingsEntities.isEmpty()) {
+                  return null;
+                }
+                return userSettingsEntities.getFirst().toDomain();
+              } catch (InterruptedException | ExecutionException e) {
+                log.error("Error fetching user settings", e);
+                return null;
+              }
+            }));
   }
 
   public List<UserSettings> findByGoogleCalendarSynchroEnabled(boolean synchroEnabled) {

@@ -14,6 +14,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.With;
 
+import java.time.Instant;
+import java.time.ZoneId;
+
 @With
 @Getter
 @Setter
@@ -25,7 +28,8 @@ public class ActivityEntity {
   private UserEntity userEntity;
   private String eventId;
   private PatientEntity patient;
-  private Timestamp beginDate;
+  private Instant beginDate;
+  private Instant endDate;
   private long durationInSeconds;
   private LocationEntity location;
   private ActivityType activityType;
@@ -39,7 +43,8 @@ public class ActivityEntity {
         UserEntity.fromDomain(activity.user()),
         activity.eventId(),
         PatientEntity.fromDomain(activity.patient()),
-        TimestampMapper.fromZonedDateTime(activity.beginDate()),
+        activity.beginDate().toInstant(),
+           activity.beginDate().plusSeconds(activity.duration().getSeconds()).toInstant(),
         activity.duration().getSeconds(),
         LocationEntity.fromDomain(activity.location()),
         activity.activityType(),
@@ -52,7 +57,7 @@ public class ActivityEntity {
         userEntity.toDomain(),
         eventId,
         patient.toDomain(),
-        TimestampMapper.toZonedDateTime(beginDate),
+        beginDate.atZone(ZoneId.of("UTC")),
         ofSeconds(durationInSeconds),
         location.toDomain(),
         activityType,

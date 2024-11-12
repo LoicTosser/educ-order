@@ -3,8 +3,11 @@ package com.osslot.educorder.interfaces;
 import com.osslot.educorder.application.CreateADIAPHKilometersFiles;
 import com.osslot.educorder.application.CreateAPAJHKilometersFiles;
 import com.osslot.educorder.domain.model.Institution;
+import com.osslot.educorder.interfaces.mapper.UserMapper;
 import java.time.ZonedDateTime;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +24,11 @@ public class KilometersController {
 
   @PostMapping("{institution}/{year}/{month}")
   public void createKilometers(
-      @PathVariable Institution institution, @PathVariable int year, @PathVariable int month) {
+      @AuthenticationPrincipal Authentication authentication,
+      @PathVariable Institution institution,
+      @PathVariable int year,
+      @PathVariable int month) {
+    var user = UserMapper.fromAuthentication(authentication);
     switch (institution) {
       case APAJH -> createAPAJHKilometersFiles.execute(year, month);
       case ADIAPH -> createADIAPHKilometersFiles.execute(year, month);
@@ -31,10 +38,13 @@ public class KilometersController {
 
   @PostMapping("{institution}")
   public void createKilometers(
-      @PathVariable Institution institution, @RequestBody KilometersRequest request) {
+      @AuthenticationPrincipal Authentication authentication,
+      @PathVariable Institution institution,
+      @RequestBody KilometersRequest request) {
+    var user = UserMapper.fromAuthentication(authentication);
     switch (institution) {
-      case APAJH -> createAPAJHKilometersFiles.execute(request.start(), request.end());
-      case ADIAPH -> createADIAPHKilometersFiles.execute(request.start(), request.end());
+      case APAJH -> createAPAJHKilometersFiles.execute(user, request.start(), request.end());
+      case ADIAPH -> createADIAPHKilometersFiles.execute(user, request.start(), request.end());
       default -> throw new IllegalArgumentException("Institution not supported");
     }
   }
