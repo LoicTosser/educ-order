@@ -1,5 +1,7 @@
 package com.osslot.educorder.infrastructure.repository;
 
+import com.osslot.educorder.infrastructure.activities.repository.GoogleSheetLocationRepository;
+import com.osslot.educorder.infrastructure.activities.repository.GoogleSheetRideDistanceRepository;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,14 +24,5 @@ class GoogleSheetRideDistanceRepositoryTest implements WithAssertions {
 
     // Then
     assertThat(distance).contains(20L);
-  }
-
-  @Test
-  void computeDistanceBetween() {
-    var domicile = locationRepository.findByName("Domicile").orElseThrow();
-    var domicileHosny = locationRepository.findByName("Domicile Hosny").orElseThrow();
-
-    repository.computeDistanceAndStore(
-        new GoogleSheetRideDistanceRepository.Ride(domicile, domicileHosny));
   }
 }

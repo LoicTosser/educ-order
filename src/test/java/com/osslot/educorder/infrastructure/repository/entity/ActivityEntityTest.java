@@ -1,6 +1,7 @@
 package com.osslot.educorder.infrastructure.repository.entity;
 
-import com.osslot.educorder.domain.model.Activity;
+import com.osslot.educorder.domain.activities.model.Activity;
+import com.osslot.educorder.infrastructure.activities.repository.entity.ActivityEntity;
 import java.time.ZoneOffset;
 import org.assertj.core.api.WithAssertions;
 import org.instancio.Instancio;
@@ -22,7 +23,7 @@ class ActivityEntityTest implements WithAssertions {
       // Then
       assertThat(activityEntity.getId()).isEqualTo(activity.id());
       assertThat(activityEntity.getEventId()).isEqualTo(activity.eventId());
-      assertThat(activityEntity.getBeginDate().toSqlTimestamp().toInstant())
+      assertThat(activityEntity.getBeginDate())
           .isEqualTo(activity.beginDate().withZoneSameInstant(ZoneOffset.UTC).toInstant());
       assertThat(activityEntity.getDurationInSeconds()).isEqualTo(activity.duration().getSeconds());
       assertThat(activityEntity.getActivityType()).isEqualTo(activity.activityType());
@@ -44,7 +45,7 @@ class ActivityEntityTest implements WithAssertions {
       assertThat(result.id()).isEqualTo(activityEntity.getId());
       assertThat(result.eventId()).isEqualTo(activityEntity.getEventId());
       assertThat(result.beginDate().withZoneSameInstant(ZoneOffset.UTC).toInstant())
-          .isEqualTo(activityEntity.getBeginDate().toSqlTimestamp().toInstant());
+          .isEqualTo(activityEntity.getBeginDate());
       assertThat(result.duration().getSeconds()).isEqualTo(activityEntity.getDurationInSeconds());
       assertThat(result.activityType()).isEqualTo(activityEntity.getActivityType());
       assertThat(result.status()).isEqualTo(activityEntity.getStatus());

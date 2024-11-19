@@ -1,8 +1,8 @@
 package com.osslot.educorder.infrastructure.repository;
 
-import com.osslot.educorder.domain.model.Institution;
-import com.osslot.educorder.domain.model.Patient;
-import com.osslot.educorder.infrastructure.repository.GoogleSheetPatientRepository.PatientMapper;
+import com.osslot.educorder.domain.activities.model.Institution;
+import com.osslot.educorder.domain.activities.model.Patient;
+import com.osslot.educorder.infrastructure.activities.repository.GoogleSheetPatientRepository.PatientMapper;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;

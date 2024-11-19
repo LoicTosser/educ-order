@@ -1,13 +1,13 @@
 package com.osslot.educorder.domain.model;
 
+import com.osslot.educorder.domain.model.User.UserId;
 import lombok.Builder;
 
 @Builder
-public record UserSettings(User user, GoogleCalendarSettings googleCalendarSettings) {
+public record UserSettings(UserId userId, GoogleCalendarSettings googleCalendarSettings) {
 
   @Builder
-  public record User(String id, String name, String email) {}
-
-  @Builder
-  public record GoogleCalendarSettings(String calendarId, boolean synchroEnabled) {}
+  public record GoogleCalendarSettings(CalendarId calendarId, boolean synchroEnabled) {
+    public record CalendarId(String id) {}
+  }
 }

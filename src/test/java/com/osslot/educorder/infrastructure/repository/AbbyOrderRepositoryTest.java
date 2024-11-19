@@ -1,7 +1,8 @@
 package com.osslot.educorder.infrastructure.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.osslot.educorder.infrastructure.repository.abby.Billing;
+import com.osslot.educorder.infrastructure.activities.repository.AbbyOrderRepository;
+import com.osslot.educorder.infrastructure.activities.repository.abby.Billing;
 import java.io.IOException;
 import java.nio.file.Paths;
 import org.assertj.core.api.WithAssertions;

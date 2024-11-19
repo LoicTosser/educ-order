@@ -1,5 +1,7 @@
 package com.osslot.educorder.application;
 
+import com.osslot.educorder.domain.activities.adapters.ImportActivitiesFromCalendar;
+import com.osslot.educorder.domain.model.User;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,6 @@ class ImportActivitiesFromCalendarTest implements WithAssertions {
 
   @Test
   void importActivities_whenActivitiesInCalendar_WriteThemInGSheetFile() {
-    importActivitiesFromCalendar.importActivities("1234", 2024, 3);
+    importActivitiesFromCalendar.importActivities(new User.UserId("1234"), 2024, 3);
   }
 }

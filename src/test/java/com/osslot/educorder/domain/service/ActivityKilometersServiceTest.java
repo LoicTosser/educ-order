@@ -1,6 +1,7 @@
 package com.osslot.educorder.domain.service;
 
-import com.osslot.educorder.domain.model.Institution;
+import com.osslot.educorder.domain.activities.model.Institution;
+import com.osslot.educorder.domain.activities.service.ActivityKilometersService;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
