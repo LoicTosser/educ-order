@@ -1,6 +1,7 @@
 package com.osslot.educorder.infrastructure.repository.mapper;
 
 import com.google.cloud.Timestamp;
+import com.osslot.educorder.infrastructure.activities.repository.mapper.TimestampMapper;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import org.assertj.core.api.WithAssertions;

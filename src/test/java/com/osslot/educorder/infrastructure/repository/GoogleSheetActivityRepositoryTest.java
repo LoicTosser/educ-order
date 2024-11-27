@@ -1,5 +1,6 @@
 package com.osslot.educorder.infrastructure.repository;
 
+import com.osslot.educorder.infrastructure.activities.repository.GoogleSheetActivityRepository;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
