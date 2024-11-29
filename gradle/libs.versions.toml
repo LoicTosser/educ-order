@@ -1,5 +1,5 @@
 [versions]
-springBootVersion = '3.3.4'
+springBootVersion = '3.4.0'
 springBootDependencyManagementVersion = '1.1.6'
 spotlessVersion = '6.24.0'
 
