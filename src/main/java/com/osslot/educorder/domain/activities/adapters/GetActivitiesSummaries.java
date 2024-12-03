@@ -38,8 +38,8 @@ public class GetActivitiesSummaries {
     return new ActivitySummaries(userId, start, end, activitiesByInstitutionsAndPatientsAndTypes);
   }
 
-  private static @NotNull Collector<Activity, Object, InstitutionActivities>
-      groupByPatient(Map<Patient.PatientId, Patient> patientsByIds) {
+  private static @NotNull Collector<Activity, Object, InstitutionActivities> groupByPatient(
+      Map<Patient.PatientId, Patient> patientsByIds) {
     return Collectors.collectingAndThen(
         Collectors.groupingBy(
             activity -> {
@@ -50,8 +50,8 @@ public class GetActivitiesSummaries {
         InstitutionActivities::new);
   }
 
-  private static @NotNull Collector<Activity, Object, PatientActivities>
-      groupByActivityType(Map<Patient.PatientId, Patient> patientsByIds) {
+  private static @NotNull Collector<Activity, Object, PatientActivities> groupByActivityType(
+      Map<Patient.PatientId, Patient> patientsByIds) {
     return Collectors.collectingAndThen(
         Collectors.groupingBy(
             Activity::activityType,
