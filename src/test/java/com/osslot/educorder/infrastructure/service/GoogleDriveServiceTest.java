@@ -2,7 +2,9 @@ package com.osslot.educorder.infrastructure.service;
 
 import com.osslot.educorder.domain.activities.model.Institution;
 import com.osslot.educorder.domain.patient.model.Patient;
+import com.osslot.educorder.domain.user.model.User;
 import com.osslot.educorder.infrastructure.activities.service.GoogleDriveService;
+import java.util.UUID;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -58,7 +60,14 @@ class GoogleDriveServiceTest implements WithAssertions {
     @DisplayName("Test Name")
     void when_unexistingFile_createsFile() {
       // Given
-      var patient = new Patient("Toto", "Tata", "Toto tata", Institution.APAJH);
+      var patient =
+          new Patient(
+              new Patient.PatientId(UUID.randomUUID().toString()),
+              new User.UserId(UUID.randomUUID().toString()),
+              "Toto",
+              "Tata",
+              "Toto tata",
+              Institution.APAJH);
 
       // When
       var result = googleDriveService.createApajhPatientFile(patient, 1, 2024);

@@ -2,10 +2,12 @@ package com.osslot.educorder.infrastructure.repository;
 
 import com.osslot.educorder.domain.activities.model.Institution;
 import com.osslot.educorder.domain.patient.model.Patient;
+import com.osslot.educorder.domain.user.model.User;
 import com.osslot.educorder.infrastructure.patient.repository.GoogleSheetPatientRepository.PatientMapper;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,6 +38,14 @@ class PatientMapperTest implements WithAssertions {
     Optional<Patient> result = PatientMapper.fromRow(row);
 
     assertThat(result).isNotEmpty();
-    assertThat(result.get()).isEqualTo(new Patient("John", "Doe", "123456", Institution.ADIAPH));
+    assertThat(result.get())
+        .isEqualTo(
+            new Patient(
+                new Patient.PatientId(UUID.randomUUID().toString()),
+                new User.UserId(UUID.randomUUID().toString()),
+                "John",
+                "Doe",
+                "123456",
+                Institution.ADIAPH));
   }
 }
