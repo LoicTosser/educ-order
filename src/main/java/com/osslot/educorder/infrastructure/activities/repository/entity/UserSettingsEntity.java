@@ -1,9 +1,9 @@
 package com.osslot.educorder.infrastructure.activities.repository.entity;
 
-import com.osslot.educorder.domain.model.User.UserId;
-import com.osslot.educorder.domain.model.UserSettings;
-import com.osslot.educorder.domain.model.UserSettings.GoogleCalendarSettings;
-import com.osslot.educorder.domain.model.UserSettings.GoogleCalendarSettings.CalendarId;
+import com.osslot.educorder.domain.user.model.User.UserId;
+import com.osslot.educorder.domain.user.model.UserSettings;
+import com.osslot.educorder.domain.user.model.UserSettings.GoogleCalendarSettings;
+import com.osslot.educorder.domain.user.model.UserSettings.GoogleCalendarSettings.CalendarId;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -16,7 +16,7 @@ import com.google.api.services.docs.v1.DocsScopes;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.auth.oauth2.AccessToken;
-import com.osslot.educorder.domain.model.User.UserId;
+import com.osslot.educorder.domain.user.model.User.UserId;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;

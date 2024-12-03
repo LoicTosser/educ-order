@@ -9,8 +9,8 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "start": "2024-10-01T00:00:00+01:00",
-  "end": "2024-10-08T00:00:00+01:00"
+  "start": "2024-11-01T00:00:00+01:00",
+  "end": "2024-12-01T00:00:00+01:00"
 }
 
 ### list activities between 2 dates from calendar

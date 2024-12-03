@@ -5,11 +5,11 @@ import com.osslot.educorder.domain.activities.model.Activity.ActivityType;
 import com.osslot.educorder.domain.activities.model.ActivityKilometers;
 import com.osslot.educorder.domain.activities.model.Institution;
 import com.osslot.educorder.domain.activities.model.Location;
-import com.osslot.educorder.domain.activities.model.Patient;
 import com.osslot.educorder.domain.activities.repository.ActivityRepository;
 import com.osslot.educorder.domain.activities.repository.LocationRepository;
 import com.osslot.educorder.domain.activities.repository.RideDistanceRepository;
-import com.osslot.educorder.domain.model.User.UserId;
+import com.osslot.educorder.domain.patient.model.Patient;
+import com.osslot.educorder.domain.user.model.User.UserId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -35,20 +35,20 @@ public class ActivityKilometersService {
       Set.of(ActivityType.CARE, ActivityType.MEETING, ActivityType.RESPITE_CARE);
 
   public ActivityKilometersService(
-      ActivityRepository googleSheetActivityRepository,
+      ActivityRepository firestoreActivityRepository,
       LocationRepository locationRepository,
       RideDistanceRepository rideDistanceRepository) {
-    this.activityRepository = googleSheetActivityRepository;
+    this.activityRepository = firestoreActivityRepository;
     this.rideDistanceRepository = rideDistanceRepository;
     this.homeLocation = locationRepository.findByName(HOME_LOCATION_NAME).orElseThrow();
   }
 
-  public Map<Patient, List<ActivityKilometers>> getActivitiesKilometersPerPatientBy(
+  public Map<Patient.PatientId, List<ActivityKilometers>> getActivitiesKilometersPerPatientBy(
       int month, int year, Institution institution) {
     var activitiesKilometers = getActivitiesKilometersBy(year, month, institution);
     return activitiesKilometers.collect(
         Collectors.toMap(
-            activityKilometers -> activityKilometers.activity().patient(),
+            activityKilometers -> activityKilometers.activity().patientId(),
             List::of,
             (list1, list2) -> Stream.concat(list1.stream(), list2.stream()).distinct().toList()));
   }
@@ -59,12 +59,12 @@ public class ActivityKilometersService {
     return getActivityKilometers(institution, activities);
   }
 
-  public Map<Patient, List<ActivityKilometers>> getActivitiesKilometersPerPatientBetween(
+  public Map<Patient.PatientId, List<ActivityKilometers>> getActivitiesKilometersPerPatientBetween(
       UserId userId, ZonedDateTime start, ZonedDateTime end, Institution institution) {
     var activitiesKilometers = getActivitiesKilometersBy(userId, start, end, institution);
     return activitiesKilometers.collect(
         Collectors.toMap(
-            activityKilometers -> activityKilometers.activity().patient(),
+            activityKilometers -> activityKilometers.activity().patientId(),
             List::of,
             (list1, list2) -> Stream.concat(list1.stream(), list2.stream()).distinct().toList()));
   }
@@ -87,9 +87,7 @@ public class ActivityKilometersService {
                     toSortedList(Comparator.comparing(Activity::beginDate))));
     return institutionActivitiesPerDay.entrySet().stream()
         .flatMap(entry -> computeDailyActivitiesKilometersStream(entry.getValue()))
-        .filter(
-            activityKilometer ->
-                activityKilometer.activity().patient().institution().equals(institution))
+        .filter(activityKilometer -> activityKilometer.activity().institution().equals(institution))
         .filter(activityKilometer -> activityKilometer.getTotalDistance() > 0)
         .sorted(
             Comparator.comparing(activityKilometers -> activityKilometers.activity().beginDate()));
@@ -102,7 +100,7 @@ public class ActivityKilometersService {
         dailyActivities.stream()
             .collect(
                 Collectors.groupingBy(
-                    activity -> activity.patient().institution(),
+                    Activity::institution,
                     toSortedList(Comparator.comparing(Activity::beginDate))));
     for (int i = 0; i < dailyActivities.size(); i++) {
       var previousActivity = i == 0 ? null : dailyActivities.get(i - 1);
@@ -110,8 +108,7 @@ public class ActivityKilometersService {
       var activity = dailyActivities.get(i);
       var previousLocation = getPreviousLocation(activity, previousActivity);
       var nextLocation = getNextLocation(activity, nextActivity);
-      var institutionDailyActivities =
-          dailyActivitiesPerInstitution.get(activity.patient().institution());
+      var institutionDailyActivities = dailyActivitiesPerInstitution.get(activity.institution());
       var activityKilometers =
           new ActivityKilometers(
               activity,
@@ -136,15 +133,14 @@ public class ActivityKilometersService {
 
   private Location getPreviousLocation(Activity activity, Activity previousActivity) {
     if (previousActivity == null
-        || !activity.patient().institution().equals(previousActivity.patient().institution())) {
+        || !activity.institution().equals(previousActivity.institution())) {
       return this.homeLocation;
     }
     return previousActivity.location();
   }
 
   private Location getNextLocation(Activity activity, Activity nextActivity) {
-    if (nextActivity == null
-        || !activity.patient().institution().equals(nextActivity.patient().institution())) {
+    if (nextActivity == null || !activity.institution().equals(nextActivity.institution())) {
       return this.homeLocation;
     }
     return nextActivity.location();
@@ -153,7 +149,7 @@ public class ActivityKilometersService {
   private Long getDistanceTo(
       Activity activity, Location nextLocation, boolean lastActivityOfTheDay) {
     Long distanceBetween = getDistanceBetween(activity.location(), nextLocation);
-    if (lastActivityOfTheDay && activity.patient().institution().equals(Institution.ADIAPH)) {
+    if (lastActivityOfTheDay && activity.institution().equals(Institution.ADIAPH)) {
       return Math.max(0, distanceBetween - 20);
     }
     return distanceBetween;
@@ -162,7 +158,7 @@ public class ActivityKilometersService {
   private Long getDistanceFrom(
       Location previousLocation, Activity activity, boolean firstActivityOfTheDay) {
     Long distanceBetween = getDistanceBetween(previousLocation, activity.location());
-    if (firstActivityOfTheDay && activity.patient().institution().equals(Institution.ADIAPH)) {
+    if (firstActivityOfTheDay && activity.institution().equals(Institution.ADIAPH)) {
       return Math.max(0, distanceBetween - 20);
     }
     return distanceBetween;

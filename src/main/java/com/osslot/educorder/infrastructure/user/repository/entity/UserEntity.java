@@ -1,6 +1,6 @@
-package com.osslot.educorder.infrastructure.activities.repository.entity;
+package com.osslot.educorder.infrastructure.user.repository.entity;
 
-import com.osslot.educorder.domain.model.User;
+import com.osslot.educorder.domain.user.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +11,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserEntity {
+
+  public static final String PATH = "users";
 
   private String id;
   private String name;

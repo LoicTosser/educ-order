@@ -5,7 +5,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
-import com.osslot.educorder.domain.activities.model.Patient;
+import com.osslot.educorder.domain.patient.model.Patient;
 import com.osslot.educorder.infrastructure.activities.repository.GoogleCredentials;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -13,11 +13,11 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -31,11 +31,11 @@ public class GoogleDriveService {
   private static final java.time.format.DateTimeFormatter FRENCH_DATE_TIME_FORMATTER =
       DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT, FormatStyle.SHORT)
           .withLocale(Locale.FRENCH);
-  private static final Map<Integer, String> yearFolderIds = new HashMap<>();
+  private static final Map<Integer, String> yearFolderIds = new ConcurrentHashMap<>();
   private final Drive driveService;
   private final String rootFolderId;
   private String facturationSheetId;
-  private final Map<GoogleFileDescriptor, String> fileIds = new HashMap<>();
+  private final Map<GoogleFileDescriptor, String> fileIds = new ConcurrentHashMap<>();
 
   public GoogleDriveService(
       GoogleCredentials googleCredentials,

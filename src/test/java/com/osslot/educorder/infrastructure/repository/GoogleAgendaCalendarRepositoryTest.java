@@ -1,7 +1,7 @@
 package com.osslot.educorder.infrastructure.repository;
 
-import com.osslot.educorder.domain.model.User.UserId;
-import com.osslot.educorder.domain.model.UserSettings.GoogleCalendarSettings.CalendarId;
+import com.osslot.educorder.domain.user.model.User.UserId;
+import com.osslot.educorder.domain.user.model.UserSettings.GoogleCalendarSettings.CalendarId;
 import com.osslot.educorder.infrastructure.activities.repository.GoogleAgendaCalendarRepository;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;

@@ -7,15 +7,17 @@ import com.google.cloud.firestore.Query;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.osslot.educorder.domain.activities.model.Activity;
 import com.osslot.educorder.domain.activities.repository.ActivityRepository;
-import com.osslot.educorder.domain.model.User.UserId;
+import com.osslot.educorder.domain.user.model.User.UserId;
 import com.osslot.educorder.infrastructure.activities.repository.entity.ActivityEntity;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -40,7 +42,7 @@ public class FireStoreActivityRepository implements ActivityRepository {
       var querySnapshot =
           firestore
               .collection(ActivityEntity.PATH)
-              .whereEqualTo("userEntity.id", userId.id())
+              .whereEqualTo("userId", userId.id())
               .whereGreaterThanOrEqualTo("beginDate", startUTC.toInstant())
               .whereLessThanOrEqualTo("endDate", endUTC.toInstant())
               .get()
@@ -62,20 +64,10 @@ public class FireStoreActivityRepository implements ActivityRepository {
   }
 
   @Override
-  public List<Activity> synchronyze(List<Activity> activities) {
-    var activitiesToDelete = activities.stream().filter(Activity::isCancelled).toList();
-    deleteActivities(activitiesToDelete);
-    var activitiesToUpsert =
-        activities.stream().filter(activity -> !activity.isCancelled()).toList();
-    upsertActivities(activitiesToUpsert);
-    return activities;
-  }
-
-  private void upsertActivities(List<Activity> activitiesToUpsert) {
+  public void upsertActivities(List<Activity> activitiesToUpsert) {
     var existingQuerySnapshotDocuments = getActivityDocuments(activitiesToUpsert);
     var activitiesToUpdateByDocumentReference =
-        getActivitiesByDocumentReference(
-            activitiesToUpsert, existingQuerySnapshotDocuments.orElse(List.of()));
+        getActivitiesByDocumentReference(activitiesToUpsert, existingQuerySnapshotDocuments);
     updateActivities(activitiesToUpdateByDocumentReference);
     var activitiesToUpdate = activitiesToUpdateByDocumentReference.values().stream().toList();
     var activitiesToInsert =
@@ -108,34 +100,45 @@ public class FireStoreActivityRepository implements ActivityRepository {
     }
   }
 
-  private void deleteActivities(List<Activity> activities) {
+  @Override
+  public void deleteActivities(List<Activity> activities) {
     var activityDocuments = getActivityDocuments(activities);
-    activityDocuments.ifPresent(
-        documents ->
-            documents.forEach(
-                document -> {
-                  try {
-                    document.getReference().delete().get();
-                  } catch (InterruptedException | ExecutionException e) {
-                    log.error("Error deleting activity", e);
-                  }
-                }));
+
+    activityDocuments.forEach(
+        document -> {
+          try {
+            document.getReference().delete().get();
+          } catch (InterruptedException | ExecutionException e) {
+            log.error("Error deleting activity", e);
+          }
+        });
   }
 
-  private Optional<List<QueryDocumentSnapshot>> getActivityDocuments(List<Activity> activities) {
+  private List<QueryDocumentSnapshot> getActivityDocuments(List<Activity> activities) {
     if (activities.isEmpty()) {
-      return Optional.empty();
+      return List.of();
     }
-    var activityEventIds = activities.stream().map(Activity::eventId).toList();
-    var activitiesCollection = firestore.collection(ActivityEntity.PATH);
-    Query query = activitiesCollection.whereIn("eventId", activityEventIds);
-    List<QueryDocumentSnapshot> documents = null;
-    try {
-      documents = query.get().get().getDocuments();
-    } catch (InterruptedException | ExecutionException e) {
-      log.error("Error fetching activities", e);
-    }
-    return Optional.ofNullable(documents);
+    AtomicInteger counter = new AtomicInteger();
+    int groupSize = 10;
+    Map<Integer, List<Activity>> mapOfChunks =
+        activities.stream()
+            .collect(Collectors.groupingBy(it -> counter.getAndIncrement() / groupSize));
+    // Create a list containing the lists of chunks
+    List<List<Activity>> activitiesChunks = new ArrayList<>(mapOfChunks.values());
+    return activitiesChunks.stream()
+        .flatMap(
+            activitiesChunk -> {
+              var activityEventIds = activitiesChunk.stream().map(Activity::eventId).toList();
+              var activitiesCollection = firestore.collection(ActivityEntity.PATH);
+              Query query = activitiesCollection.whereIn("eventId", activityEventIds);
+              try {
+                return query.get().get().getDocuments().stream();
+              } catch (InterruptedException | ExecutionException e) {
+                log.error("Error fetching activities", e);
+              }
+              return Stream.empty();
+            })
+        .toList();
   }
 
   private Map<DocumentReference, Activity> getActivitiesByDocumentReference(

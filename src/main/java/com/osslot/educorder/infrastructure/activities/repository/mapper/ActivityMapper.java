@@ -3,10 +3,10 @@ package com.osslot.educorder.infrastructure.activities.repository.mapper;
 import com.google.api.services.calendar.model.Event;
 import com.osslot.educorder.domain.activities.model.Activity;
 import com.osslot.educorder.domain.activities.model.Location;
-import com.osslot.educorder.domain.activities.model.Patient;
 import com.osslot.educorder.domain.activities.repository.LocationRepository;
-import com.osslot.educorder.domain.activities.repository.PatientRepository;
-import com.osslot.educorder.domain.model.User.UserId;
+import com.osslot.educorder.domain.patient.model.Patient;
+import com.osslot.educorder.domain.patient.repository.PatientRepository;
+import com.osslot.educorder.domain.user.model.User.UserId;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Optional;
@@ -52,10 +52,11 @@ public class ActivityMapper {
             UUID.randomUUID().toString(),
             userId,
             eventId,
-            patient.get(),
+            patient.get().id(),
             activityStartDate,
             duration,
             location.get(),
+            patient.map(Patient::institution).orElse(null),
             activityType.get(),
             toActivityStatus(event));
     log.info("Activity: {}", activity);

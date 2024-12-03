@@ -10,8 +10,9 @@ import com.osslot.educorder.domain.activities.model.Activity;
 import com.osslot.educorder.domain.activities.model.Location;
 import com.osslot.educorder.domain.activities.repository.ActivityRepository;
 import com.osslot.educorder.domain.activities.repository.LocationRepository;
-import com.osslot.educorder.domain.activities.repository.PatientRepository;
-import com.osslot.educorder.domain.model.User.UserId;
+import com.osslot.educorder.domain.patient.model.Patient;
+import com.osslot.educorder.domain.patient.repository.PatientRepository;
+import com.osslot.educorder.domain.user.model.User.UserId;
 import com.osslot.educorder.infrastructure.activities.service.GoogleDriveService;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -31,9 +32,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.stereotype.Service;
 
-@Service
+// @Service
 @Slf4j
 public class GoogleSheetActivityRepository implements ActivityRepository {
 
@@ -142,7 +142,7 @@ public class GoogleSheetActivityRepository implements ActivityRepository {
 
       var newRange = String.format("%s%d:1000", ACTIVITY_SHEET_NAME, firstIndex + 2);
       log.info("New range {}", newRange);
-      var rowsToInsert = activities.stream().map(GoogleSheetActivityRepository::toRow).toList();
+      var rowsToInsert = activities.stream().map(this::toRow).toList();
       var valueRange = new ValueRange();
       valueRange.setValues(rowsToInsert);
       valueRange.setRange(newRange);
@@ -162,9 +162,10 @@ public class GoogleSheetActivityRepository implements ActivityRepository {
   }
 
   @Override
-  public List<Activity> synchronyze(List<Activity> activities) {
-    return List.of();
-  }
+  public void upsertActivities(List<Activity> activitiesToUpsert) {}
+
+  @Override
+  public void deleteActivities(List<Activity> activitiesToDelete) {}
 
   private static boolean isBetween(List<Object> row, ZonedDateTime start, ZonedDateTime end) {
     var dateTimeAsStr = row.getFirst();
@@ -204,7 +205,13 @@ public class GoogleSheetActivityRepository implements ActivityRepository {
     }
     return Optional.of(
         new Activity(
-            null, patient.orElseThrow(), date, duration, location.orElseThrow(), activityType));
+            null,
+            patient.orElseThrow().id(),
+            date,
+            duration,
+            location.orElseThrow(),
+            patient.orElseThrow().institution(),
+            activityType));
   }
 
   private Optional<Location> getLocation(String locationValue) {
@@ -222,10 +229,11 @@ public class GoogleSheetActivityRepository implements ActivityRepository {
     return Optional.of(new Location("", locationValue));
   }
 
-  static List<Object> toRow(Activity activity) {
+  List<Object> toRow(Activity activity) {
+    var patient = patientRepository.findById(activity.patientId());
     return List.of(
         activity.beginDate().format(WRITE_DATE_TIME_FORMATTER),
-        activity.patient().fullName(),
+        patient.map(Patient::fullName).orElse(""),
         formatDuration(activity.duration()),
         activity.activityType().getFrenchName(),
         activity.location().address(),

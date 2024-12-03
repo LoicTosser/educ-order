@@ -1,7 +1,8 @@
 package com.osslot.educorder.domain.activities.model;
 
 import com.osslot.educorder.domain.activities.model.Activity.ActivityType;
-import com.osslot.educorder.domain.model.User.UserId;
+import com.osslot.educorder.domain.patient.model.Patient;
+import com.osslot.educorder.domain.user.model.User.UserId;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -47,14 +48,9 @@ public record ActivitySummaries(
       Duration durations,
       int count) {
 
-    public PatientActivities(Map<ActivityType, Activities> activitiesByType) {
+    public PatientActivities(Patient patient, Map<ActivityType, Activities> activitiesByType) {
       this(
-          activitiesByType.values().stream()
-              .findFirst()
-              .map(Activities::activities)
-              .map(List::getFirst)
-              .map(Activity::patient)
-              .orElseThrow(),
+          patient,
           activitiesByType,
           totalDurations(activitiesByType.values().stream()),
           getCount(activitiesByType.values().stream()));

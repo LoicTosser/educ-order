@@ -4,8 +4,8 @@ import com.osslot.educorder.domain.activities.model.ActivitySyncToken;
 import com.osslot.educorder.domain.activities.repository.ActivityRepository;
 import com.osslot.educorder.domain.activities.repository.ActivitySyncTokenRepository;
 import com.osslot.educorder.domain.activities.repository.CalendarRepository;
-import com.osslot.educorder.domain.model.User.UserId;
-import com.osslot.educorder.domain.model.UserSettings.GoogleCalendarSettings.CalendarId;
+import com.osslot.educorder.domain.user.model.User.UserId;
+import com.osslot.educorder.domain.user.model.UserSettings.GoogleCalendarSettings.CalendarId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -21,7 +21,7 @@ public class ImportActivitiesService {
 
   private final CalendarRepository calendarRepository;
   private final ActivityRepository fireStoreActivityRepository;
-  private final ActivityRepository googleSheetActivityRepository;
+  //  private final ActivityRepository googleSheetActivityRepository;
   private final ActivitySyncTokenRepository activitySyncTokenRepository;
 
   public CalendarRepository.FetchCalendarActivitiesResponse importActivities(
@@ -35,7 +35,7 @@ public class ImportActivitiesService {
   public CalendarRepository.FetchCalendarActivitiesResponse importActivitiesToGoogleSheet(
       UserId userId, CalendarId calendarId, ZonedDateTime start, ZonedDateTime end) {
     var fetchCalendarActivitiesResponse = fetchCalendarActivities(userId, calendarId, start, end);
-    googleSheetActivityRepository.add(fetchCalendarActivitiesResponse.activities());
+    //    googleSheetActivityRepository.add(fetchCalendarActivitiesResponse.activities());
     return fetchCalendarActivitiesResponse;
   }
 

@@ -1,7 +1,7 @@
 package com.osslot.educorder.infrastructure.service;
 
 import com.osslot.educorder.domain.activities.model.Institution;
-import com.osslot.educorder.domain.activities.model.Patient;
+import com.osslot.educorder.domain.patient.model.Patient;
 import com.osslot.educorder.infrastructure.activities.service.GoogleDriveService;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.DisplayName;

@@ -1,7 +1,7 @@
 package com.osslot.educorder.domain.user.repository;
 
-import com.osslot.educorder.domain.model.User.UserId;
-import com.osslot.educorder.domain.model.UserSettings;
+import com.osslot.educorder.domain.user.model.User.UserId;
+import com.osslot.educorder.domain.user.model.UserSettings;
 import java.util.List;
 import java.util.Optional;
 

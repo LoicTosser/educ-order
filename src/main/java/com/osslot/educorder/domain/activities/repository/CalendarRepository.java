@@ -2,8 +2,8 @@ package com.osslot.educorder.domain.activities.repository;
 
 import com.osslot.educorder.domain.activities.model.Activity;
 import com.osslot.educorder.domain.activities.model.ActivitySyncToken;
-import com.osslot.educorder.domain.model.User.UserId;
-import com.osslot.educorder.domain.model.UserSettings.GoogleCalendarSettings.CalendarId;
+import com.osslot.educorder.domain.user.model.User.UserId;
+import com.osslot.educorder.domain.user.model.UserSettings.GoogleCalendarSettings.CalendarId;
 import java.time.ZonedDateTime;
 import java.util.List;
 

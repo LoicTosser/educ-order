@@ -19,6 +19,5 @@ public class ActivityCalendarCron {
   public void syncActivities() {
     log.info("[CRON} Syncing activities from calendar");
     importActivitiesFromCalendar.syncActivities();
-    ;
   }
 }

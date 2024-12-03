@@ -1,6 +1,7 @@
 package com.osslot.educorder.domain.activities.model;
 
-import com.osslot.educorder.domain.model.User.UserId;
+import com.osslot.educorder.domain.patient.model.Patient.PatientId;
+import com.osslot.educorder.domain.user.model.User.UserId;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -10,28 +11,31 @@ public record Activity(
     String id,
     UserId userId,
     String eventId,
-    Patient patient,
+    PatientId patientId,
     ZonedDateTime beginDate,
     Duration duration,
     Location location,
+    Institution institution,
     ActivityType activityType,
     ActivityStatus status) {
 
   public Activity(
       UserId userId,
-      Patient patient,
+      PatientId patientId,
       ZonedDateTime beginDate,
       Duration duration,
       Location location,
+      Institution institution,
       ActivityType activityType) {
     this(
         UUID.randomUUID().toString(),
         userId,
         UUID.randomUUID().toString(),
-        patient,
+        patientId,
         beginDate,
         duration,
         location,
+        institution,
         activityType,
         ActivityStatus.CONFIRMED);
   }

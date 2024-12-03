@@ -84,7 +84,8 @@ public class GoogleSheetRideDistanceRepository implements RideDistanceRepository
                     && !row.getFirst().toString().isEmpty())
         .flatMap(this::toRidesDistances)
         .collect(
-            Collectors.toMap(RideDistance::ride, RideDistance::distanceInKilometers, (a, b) -> a));
+            Collectors.toConcurrentMap(
+                RideDistance::ride, RideDistance::distanceInKilometers, (a, b) -> a));
   }
 
   private Stream<RideDistance> toRidesDistances(List<Object> row) {

@@ -1,4 +1,4 @@
-package com.osslot.educorder.infrastructure.activities.repository;
+package com.osslot.educorder.infrastructure.patient.repository;
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.JsonFactory;
@@ -6,14 +6,22 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.osslot.educorder.domain.activities.model.Institution;
-import com.osslot.educorder.domain.activities.model.Patient;
-import com.osslot.educorder.domain.activities.repository.PatientRepository;
+import com.osslot.educorder.domain.patient.model.Patient;
+import com.osslot.educorder.domain.patient.model.Patient.PatientId;
+import com.osslot.educorder.domain.patient.repository.PatientRepository;
+import com.osslot.educorder.domain.user.model.User;
+import com.osslot.educorder.infrastructure.activities.repository.GoogleCredentials;
 import com.osslot.educorder.infrastructure.activities.service.GoogleDriveService;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,7 +34,8 @@ public class GoogleSheetPatientRepository implements PatientRepository {
   private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
   private final Sheets service;
   private final GoogleDriveService googleDriveService;
-  private final List<Patient> allPatients;
+  private final Map<String, Patient> patientsByFullName;
+  private final Map<String, Patient> patientsByIds;
 
   public GoogleSheetPatientRepository(
       GoogleCredentials googleCredentials, GoogleDriveService googleDriveService)
@@ -38,17 +47,37 @@ public class GoogleSheetPatientRepository implements PatientRepository {
                 googleCredentials.getCredentials(GoogleNetHttpTransport.newTrustedTransport()))
             .build();
     this.googleDriveService = googleDriveService;
-    allPatients = initPatients();
+    var allPatients = initPatients();
+    this.patientsByFullName =
+        allPatients.stream().collect(Collectors.toMap(Patient::fullName, patient -> patient));
+    this.patientsByIds =
+        allPatients.stream()
+            .collect(Collectors.toMap(patient -> patient.id().id(), patient -> patient));
   }
 
   @Override
   public List<Patient> findAll() {
-    return allPatients;
+    return new ArrayList<>(patientsByIds.values());
   }
 
   @Override
   public Optional<Patient> findByFullName(String fullName) {
-    return allPatients.stream().filter(patient -> patient.fullName().equals(fullName)).findFirst();
+    return Optional.ofNullable(patientsByFullName.get(fullName));
+  }
+
+  @Override
+  public Map<PatientId, Patient> findAllByIds(User.UserId userId, Set<PatientId> ids) {
+    return ids.stream()
+        .map(PatientId::id)
+        .map(patientsByIds::get)
+        .filter(Objects::nonNull)
+        .filter(patient -> patient.userId().equals(userId))
+        .collect(Collectors.toMap(Patient::id, patient -> patient));
+  }
+
+  @Override
+  public Optional<Patient> findById(PatientId patientId) {
+    return Optional.ofNullable(patientsByIds.get(patientId.id()));
   }
 
   private List<Patient> initPatients() {
@@ -84,10 +113,12 @@ public class GoogleSheetPatientRepository implements PatientRepository {
       }
       return Optional.of(
           new Patient(
-              row.get(1).toString(),
-              row.get(0).toString(),
+              new PatientId(row.get(0).toString()),
+              new User.UserId(row.get(1).toString()),
               row.get(3).toString(),
-              Institution.fromFrenchName(row.get(2).toString())));
+              row.get(2).toString(),
+              row.get(5).toString(),
+              Institution.fromFrenchName(row.get(4).toString())));
     }
   }
 }

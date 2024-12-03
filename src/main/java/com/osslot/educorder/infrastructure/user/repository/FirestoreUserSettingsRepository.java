@@ -1,8 +1,8 @@
 package com.osslot.educorder.infrastructure.user.repository;
 
 import com.google.cloud.firestore.Firestore;
-import com.osslot.educorder.domain.model.User.UserId;
-import com.osslot.educorder.domain.model.UserSettings;
+import com.osslot.educorder.domain.user.model.User.UserId;
+import com.osslot.educorder.domain.user.model.UserSettings;
 import com.osslot.educorder.domain.user.repository.UserSettingsRepository;
 import com.osslot.educorder.infrastructure.activities.repository.entity.UserSettingsEntity;
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public class FirestoreUserSettingsRepository implements UserSettingsRepository {
                 var userSettingsEntities =
                     firestore
                         .collection(UserSettingsEntity.PATH)
-                        .whereEqualTo("user.id", userId)
+                        .whereEqualTo("userId", userId.id())
                         .get()
                         .get()
                         .toObjects(UserSettingsEntity.class);

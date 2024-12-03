@@ -1,8 +1,8 @@
 package com.osslot.educorder.domain.user.service;
 
-import com.osslot.educorder.domain.model.User.UserId;
-import com.osslot.educorder.domain.model.UserSettings;
 import com.osslot.educorder.domain.user.adapters.UserSettingsAdapter;
+import com.osslot.educorder.domain.user.model.User.UserId;
+import com.osslot.educorder.domain.user.model.UserSettings;
 import com.osslot.educorder.domain.user.repository.UserSettingsRepository;
 import java.util.List;
 import java.util.Optional;

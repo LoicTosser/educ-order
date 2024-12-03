@@ -1,7 +1,7 @@
 package com.osslot.educorder.domain.adapters;
 
-import com.osslot.educorder.domain.activities.model.Patient;
-import com.osslot.educorder.domain.activities.repository.PatientRepository;
+import com.osslot.educorder.domain.patient.model.Patient;
+import com.osslot.educorder.domain.patient.repository.PatientRepository;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
 package com.osslot.educorder.domain.activities.adapters;
 
-import static com.osslot.educorder.domain.model.User.UserId;
+import static com.osslot.educorder.domain.user.model.User.UserId;
 
 import com.osslot.educorder.domain.activities.repository.CalendarRepository.FetchCalendarActivitiesResponse;
 import com.osslot.educorder.domain.activities.service.ImportActivitiesService;

@@ -3,7 +3,7 @@ import Container from "react-bootstrap/Container";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from "axios";
 import Navbar from "./navbar";
-import { Duration, DateTime } from 'luxon';
+import {DateTime, Duration} from 'luxon';
 
 const Activities = () => {
 
@@ -45,15 +45,36 @@ const Activities = () => {
         return date.toISOString();
     };
 
-    const handleSubmit = async (event) => {
+    const listInterventions = async (event) => {
         event.preventDefault();
         const startUTC = convertToUTC(startDate);
         const endUTC = convertToUTC(endDate);
-        const response = fetchActivities(startUTC, endUTC);
-        if (response.status !== 200) {
-            alert('Failed to fetch activities');
-        }
+        fetchActivities(startUTC, endUTC).then(response => {
+            console.log(response.data);
+        }).catch(function (error) {
+            console.log(error);
+        });
     };
+
+    function generateInstitutionKilometersFiles(institution, startUTC, endUTC) {
+        axios.post(`http://localhost:8080/kilometers/${institution}`, {
+            start: startUTC,
+            end: endUTC,
+        }, {withCredentials: true})
+            .then(response => {
+                console.log(response.data);
+            }).catch(function (error) {
+            console.log(error);
+        });
+    }
+
+    const generateKilometersFiles = async (event) => {
+        event.preventDefault();
+        const startUTC = convertToUTC(startDate);
+        const endUTC = convertToUTC(endDate);
+        generateInstitutionKilometersFiles(`ADIAPH`, startUTC, endUTC);
+        generateInstitutionKilometersFiles(`APAJH`, startUTC, endUTC);
+    }
 
     const formatDuration = (isoDuration) => {
         const duration = Duration.fromISO(isoDuration, {locale: 'fr'});
@@ -174,7 +195,7 @@ const Activities = () => {
             <Container as="main" className="py-4 px-3 mx-auto">
                 <Navbar/>
                 <h1>Récaptitulatif des activitées</h1>
-                <form class="row justify-content-start mb-3" onSubmit={handleSubmit}>
+                <form className="row justify-content-start mb-3" onSubmit={listInterventions}>
                     <div className="col-4">
                         <label for="startDateInput" class="form-label">Date de début:</label>
                         <input
@@ -200,14 +221,17 @@ const Activities = () => {
                         />
                     </div>
                     <div className="col-4">
-                        <button type="submit" class="btn btn-primary">Lister interventions</button>
+                        <button type="submit" className="btn btn-primary">Lister interventions</button>
+                        <button type="button" className="btn btn-primary" onClick={generateKilometersFiles}>Générer
+                            fichiers kilomètres
+                        </button>
                     </div>
                 </form>
                 <div className="row">
                     <div className="accordion" id="activities-summaries">
                         <Greeting/>
                     </div>
-                </div>
+                    </div>
             </Container>
         </>
 );

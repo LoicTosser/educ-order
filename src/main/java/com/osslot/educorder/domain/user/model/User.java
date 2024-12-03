@@ -1,4 +1,4 @@
-package com.osslot.educorder.domain.model;
+package com.osslot.educorder.domain.user.model;
 
 import lombok.Builder;
 

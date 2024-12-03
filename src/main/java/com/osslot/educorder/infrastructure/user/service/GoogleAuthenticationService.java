@@ -1,8 +1,8 @@
 package com.osslot.educorder.infrastructure.user.service;
 
-import com.osslot.educorder.domain.model.User;
-import com.osslot.educorder.domain.model.User.UserId;
 import com.osslot.educorder.domain.user.adapters.AuthenticationService;
+import com.osslot.educorder.domain.user.model.User;
+import com.osslot.educorder.domain.user.model.User.UserId;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;

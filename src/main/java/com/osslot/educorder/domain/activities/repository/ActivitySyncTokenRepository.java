@@ -1,7 +1,7 @@
 package com.osslot.educorder.domain.activities.repository;
 
 import com.osslot.educorder.domain.activities.model.ActivitySyncToken;
-import com.osslot.educorder.domain.model.User.UserId;
+import com.osslot.educorder.domain.user.model.User.UserId;
 import java.util.Optional;
 
 public interface ActivitySyncTokenRepository {

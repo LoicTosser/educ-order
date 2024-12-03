@@ -1,7 +1,7 @@
 package com.osslot.educorder.application;
 
 import com.osslot.educorder.domain.activities.adapters.ImportActivitiesFromCalendar;
-import com.osslot.educorder.domain.model.User;
+import com.osslot.educorder.domain.user.model.User;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

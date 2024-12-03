@@ -1,5 +1,6 @@
 package com.osslot.educorder.domain.activities.model;
 
+import com.osslot.educorder.domain.patient.model.Patient;
 import java.util.List;
 
 public class Order {
