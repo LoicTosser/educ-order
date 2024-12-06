@@ -22,7 +22,6 @@ public class ImportActivitiesService {
 
   private final CalendarRepository calendarRepository;
   private final ActivityRepository fireStoreActivityRepository;
-  //  private final ActivityRepository googleSheetActivityRepository;
   private final ActivitySyncTokenRepository activitySyncTokenRepository;
 
   public CalendarRepository.FetchCalendarActivitiesResponse importActivities(
@@ -30,13 +29,6 @@ public class ImportActivitiesService {
     var fetchCalendarActivitiesResponse =
         calendarRepository.fromCalendar(userId, calendarId, year, month);
     fireStoreActivityRepository.add(fetchCalendarActivitiesResponse.activities());
-    return fetchCalendarActivitiesResponse;
-  }
-
-  public CalendarRepository.FetchCalendarActivitiesResponse importActivitiesToGoogleSheet(
-      UserId userId, CalendarId calendarId, ZonedDateTime start, ZonedDateTime end) {
-    var fetchCalendarActivitiesResponse = fetchCalendarActivities(userId, calendarId, start, end);
-    //    googleSheetActivityRepository.add(fetchCalendarActivitiesResponse.activities());
     return fetchCalendarActivitiesResponse;
   }
 

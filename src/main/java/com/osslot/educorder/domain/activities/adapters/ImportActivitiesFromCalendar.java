@@ -29,16 +29,6 @@ public class ImportActivitiesFromCalendar {
     return importActivitiesService.importActivities(userId, calendarId, year, month);
   }
 
-  public FetchCalendarActivitiesResponse importActivitiesToGoogleSheet(
-      UserId userId, ZonedDateTime start, ZonedDateTime end) {
-    var userSettings = userSettingsAdapter.findByUserId(userId);
-    if (userSettings.isEmpty()) {
-      return new FetchCalendarActivitiesResponse(List.of(), null, userId);
-    }
-    var calendarId = userSettings.orElseThrow().googleCalendarSettings().calendarId();
-    return importActivitiesService.importActivitiesToGoogleSheet(userId, calendarId, start, end);
-  }
-
   public FetchCalendarActivitiesResponse importActivities(
       UserId userId, ZonedDateTime start, ZonedDateTime end) {
     var userSettings = userSettingsAdapter.findByUserId(userId);

@@ -79,7 +79,7 @@ public class ActivityMapper {
   private Optional<Location> toLocation(UserId userId, Event event) {
     String eventLocation = event.getLocation();
     if (eventLocation != null) {
-      return Optional.of(new Location("", event.getLocation()));
+      return Optional.of(new Location(event.getLocation()));
     }
     return getHomeLocation(userId);
   }

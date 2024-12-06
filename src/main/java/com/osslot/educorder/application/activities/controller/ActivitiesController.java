@@ -11,11 +11,9 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.lang.NonNull;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,13 +32,6 @@ public class ActivitiesController {
   public void importMonthActivities(@PathVariable int year, @PathVariable int month) {
     var user = authenticationService.getCurrentUser();
     importActivitiesFromCalendar.importActivities(user.id(), year, month);
-  }
-
-  @PostMapping()
-  public void importActivities(@RequestBody @Validated ImportActivitiesRequest request) {
-    var user = authenticationService.getCurrentUser();
-    importActivitiesFromCalendar.importActivitiesToGoogleSheet(
-        user.id(), request.start(), request.end());
   }
 
   @GetMapping()

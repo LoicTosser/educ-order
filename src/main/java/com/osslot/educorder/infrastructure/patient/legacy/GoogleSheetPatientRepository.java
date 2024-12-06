@@ -1,4 +1,4 @@
-package com.osslot.educorder.infrastructure.patient.repository;
+package com.osslot.educorder.infrastructure.patient.legacy;
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.JsonFactory;

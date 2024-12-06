@@ -6,6 +6,7 @@ import com.osslot.educorder.domain.patient.model.Patient;
 import com.osslot.educorder.domain.patient.model.Patient.PatientId;
 import com.osslot.educorder.domain.patient.repository.PatientRepository;
 import com.osslot.educorder.domain.user.model.User.UserId;
+import com.osslot.educorder.infrastructure.patient.legacy.GoogleSheetPatientRepository;
 import com.osslot.educorder.infrastructure.patient.repository.entity.PatientEntity;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +50,8 @@ public class FirestorePatientRepository implements PatientRepository {
 
   @Override
   public List<Patient> findAllByUserId(UserId userId) {
-    return patientsByIdsCache.computeIfAbsent(userId.id(), this::findAllByUserId).values().stream().toList();
+    return patientsByIdsCache.computeIfAbsent(userId.id(), this::findAllByUserId).values().stream()
+        .toList();
   }
 
   @Override
@@ -76,18 +78,19 @@ public class FirestorePatientRepository implements PatientRepository {
   private Map<String, Patient> findAllByUserId(String userId) {
     try {
       var patientEntities =
-              firestore
-                      .collection(PatientEntity.PATH)
-                      .whereEqualTo("userId", userId)
-                      .get()
-                      .get()
-                      .toObjects(PatientEntity.class);
-      return patientEntities.stream().map(PatientEntity::toDomain).collect(Collectors.toMap(patient -> patient.id().id(), patient -> patient));
+          firestore
+              .collection(PatientEntity.PATH)
+              .whereEqualTo("userId", userId)
+              .get()
+              .get()
+              .toObjects(PatientEntity.class);
+      return patientEntities.stream()
+          .map(PatientEntity::toDomain)
+          .collect(Collectors.toMap(patient -> patient.id().id(), patient -> patient));
     } catch (InterruptedException | ExecutionException e) {
       log.error("Error fetching patients for user {}", userId, e);
       return new HashMap<>();
     }
-
   }
 
   private void updateCacheWithMissingPatients(UserId userId, Set<PatientId> ids) {

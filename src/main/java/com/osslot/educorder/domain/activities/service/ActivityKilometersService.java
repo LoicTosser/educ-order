@@ -5,6 +5,7 @@ import com.osslot.educorder.domain.activities.model.Activity.ActivityType;
 import com.osslot.educorder.domain.activities.model.ActivityKilometers;
 import com.osslot.educorder.domain.activities.model.Institution;
 import com.osslot.educorder.domain.activities.model.Location;
+import com.osslot.educorder.domain.activities.model.RideDistance;
 import com.osslot.educorder.domain.activities.repository.ActivityRepository;
 import com.osslot.educorder.domain.activities.repository.RideDistanceRepository;
 import com.osslot.educorder.domain.patient.model.Patient;
@@ -163,6 +164,9 @@ public class ActivityKilometersService {
   }
 
   private Long getDistanceBetween(Location from, Location to) {
-    return rideDistanceRepository.getDistanceInKilometers(from, to).orElse(0L);
+    return rideDistanceRepository
+        .findDistanceBetween(from, to)
+        .map(RideDistance::getDistanceInKilometers)
+        .orElse(0L);
   }
 }

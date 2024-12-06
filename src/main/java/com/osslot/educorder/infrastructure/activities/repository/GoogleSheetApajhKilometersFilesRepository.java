@@ -11,6 +11,7 @@ import com.osslot.educorder.application.EducOrderApplication;
 import com.osslot.educorder.domain.activities.model.ActivityKilometers;
 import com.osslot.educorder.domain.activities.repository.ApajhKilometersFilesRepository;
 import com.osslot.educorder.domain.patient.model.Patient;
+import com.osslot.educorder.infrastructure.activities.legacy.GoogleSheetActivityExporter;
 import com.osslot.educorder.infrastructure.activities.service.GoogleDriveService;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -122,7 +123,7 @@ public class GoogleSheetApajhKilometersFilesRepository implements ApajhKilometer
                           activityKilometers
                               .activity()
                               .beginDate()
-                              .format(GoogleSheetActivityRepository.WRITE_DATE_TIME_FORMATTER),
+                              .format(GoogleSheetActivityExporter.WRITE_DATE_TIME_FORMATTER),
                           activityKilometers.activity().location().address(),
                           activityKilometers.from().address(),
                           activityKilometers.to().address(),
