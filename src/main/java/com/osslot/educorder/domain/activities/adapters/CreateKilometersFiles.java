@@ -45,7 +45,7 @@ public class CreateKilometersFiles {
             user.id(), start, end, Institution.ADIAPH);
     activitiesKilometersPerPatient.forEach(
         (patientId, activities) -> {
-          var patient = patientService.findById(patientId);
+          var patient = patientService.findById(user.id(), patientId);
           if (patient.isEmpty()) {
             log.warn("Patient not found for id {}", patientId);
             return;

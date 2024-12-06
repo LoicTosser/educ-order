@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,27 +27,26 @@ public class FirestoreUserSettingsRepository implements UserSettingsRepository {
   private static final List<UserSettings> googleCalendarSynchoEnabledCache = new ArrayList<>();
 
   public Optional<UserSettings> findByUserId(UserId userId) {
-    return Optional.ofNullable(
-        userSettingsCache.computeIfAbsent(
-            userId.id(),
-            aUserId -> {
-              try {
-                var userSettingsEntities =
-                    firestore
-                        .collection(UserSettingsEntity.PATH)
-                        .whereEqualTo("userId", userId.id())
-                        .get()
-                        .get()
-                        .toObjects(UserSettingsEntity.class);
-                if (userSettingsEntities.isEmpty()) {
-                  return null;
-                }
-                return userSettingsEntities.getFirst().toDomain();
-              } catch (InterruptedException | ExecutionException e) {
-                log.error("Error fetching user settings", e);
-                return null;
-              }
-            }));
+    return Optional.ofNullable(userSettingsCache.computeIfAbsent(userId.id(), this::findById));
+  }
+
+  private @Nullable UserSettings findById(String aUserId) {
+    try {
+      var userSettingsEntities =
+          firestore
+              .collection(UserSettingsEntity.PATH)
+              .whereEqualTo("userId", aUserId)
+              .get()
+              .get()
+              .toObjects(UserSettingsEntity.class);
+      if (userSettingsEntities.isEmpty()) {
+        return null;
+      }
+      return userSettingsEntities.getFirst().toDomain();
+    } catch (InterruptedException | ExecutionException e) {
+      log.error("Error fetching user settings for user {}", aUserId, e);
+      return null;
+    }
   }
 
   public List<UserSettings> findByGoogleCalendarSynchroEnabled(boolean synchroEnabled) {

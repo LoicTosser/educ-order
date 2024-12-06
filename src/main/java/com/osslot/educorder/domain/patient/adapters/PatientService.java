@@ -3,7 +3,7 @@ package com.osslot.educorder.domain.patient.adapters;
 import com.osslot.educorder.domain.patient.model.Patient;
 import com.osslot.educorder.domain.patient.model.Patient.PatientId;
 import com.osslot.educorder.domain.patient.repository.PatientRepository;
-import com.osslot.educorder.domain.user.model.User;
+import com.osslot.educorder.domain.user.model.User.UserId;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -16,11 +16,11 @@ public class PatientService {
 
   private final PatientRepository patientRepository;
 
-  public Optional<Patient> findById(PatientId patientId) {
-    return patientRepository.findById(patientId);
+  public Optional<Patient> findById(UserId userId, PatientId patientId) {
+    return patientRepository.findById(userId, patientId);
   }
 
-  public Map<PatientId, Patient> findAllByIds(User.UserId userId, Set<PatientId> patientIds) {
+  public Map<PatientId, Patient> findAllByIds(UserId userId, Set<PatientId> patientIds) {
     return patientRepository.findAllByIds(userId, patientIds);
   }
 }

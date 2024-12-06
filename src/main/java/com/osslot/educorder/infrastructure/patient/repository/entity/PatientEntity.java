@@ -18,6 +18,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class PatientEntity extends MultiTenantEntity {
 
+  public static final String PATH = "patients";
   private static final String CURRENT_VERSION = "0.0.1";
 
   private String firstName;

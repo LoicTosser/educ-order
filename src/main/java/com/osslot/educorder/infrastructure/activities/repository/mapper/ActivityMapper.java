@@ -32,7 +32,7 @@ public class ActivityMapper {
         event.getLocation() != null ? event.getLocation() : "None");
     var eventId = event.getId();
     var activityType = toActivityType(event);
-    var patient = toPatient(event);
+    var patient = toPatient(userId, event);
     var location = toLocation(userId, event);
     if (activityType.isEmpty() || patient.isEmpty() || location.isEmpty()) {
       return Optional.empty();
@@ -63,12 +63,12 @@ public class ActivityMapper {
     return Optional.of(activity);
   }
 
-  private Optional<Patient> toPatient(Event event) {
+  private Optional<Patient> toPatient(UserId userId, Event event) {
     if (event.getSummary() == null) {
       return Optional.empty();
     }
     String eventName = event.getSummary().toLowerCase();
-    return patientRepository.findAll().stream()
+    return patientRepository.findAllByUserId(userId).stream()
         .filter(
             patient ->
                 eventName.contains(patient.firstName().toLowerCase())

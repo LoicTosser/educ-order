@@ -9,6 +9,8 @@ import com.osslot.educorder.domain.user.repository.UserSettingsRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 @AllArgsConstructor
 public class InitUser {
@@ -26,6 +28,7 @@ public class InitUser {
     if (userSettingsRepository.findByUserId(user.id()).isEmpty()) {
       userSettingsRepository.add(
           UserSettings.builder()
+                  .userSettingsId(UserSettings.UserSettingsId.builder().id(UUID.randomUUID().toString()).build())
               .userId(user.id())
               .defaultLocation(new Location("Home", "13 rue saint vincent 33850 LEOGNAN"))
               .googleCalendarSettings(

@@ -11,6 +11,7 @@ import com.osslot.educorder.domain.activities.model.Location;
 import com.osslot.educorder.domain.activities.repository.ActivityRepository;
 import com.osslot.educorder.domain.activities.repository.LocationRepository;
 import com.osslot.educorder.domain.patient.model.Patient;
+import com.osslot.educorder.domain.patient.repository.LegacyPatientRepository;
 import com.osslot.educorder.domain.patient.repository.PatientRepository;
 import com.osslot.educorder.domain.user.model.User.UserId;
 import com.osslot.educorder.infrastructure.activities.service.GoogleDriveService;
@@ -57,18 +58,22 @@ public class GoogleSheetActivityRepository implements ActivityRepository {
   private static final String ACTIVITY_RANGE_READ = "Prises en Charge!A2:10000";
   private static final String ACTIVITY_SHEET_NAME = "Prises en Charge!A";
   public static final ZoneId PARIS_ZONE_ID = ZoneId.of("Europe/Paris");
+
   private final Sheets service;
   private final GoogleDriveService googleDriveService;
   private final PatientRepository patientRepository;
+  private final LegacyPatientRepository legacyPatientRepository;
   private final LocationRepository locationRepository;
 
   public GoogleSheetActivityRepository(
       GoogleCredentials googleCredentials,
       PatientRepository patientRepository,
+      LegacyPatientRepository legacyPatientRepository,
       LocationRepository locationRepository,
       GoogleDriveService googleDriveService)
       throws GeneralSecurityException, IOException {
     this.patientRepository = patientRepository;
+    this.legacyPatientRepository = legacyPatientRepository;
     this.locationRepository = locationRepository;
     this.service =
         new Sheets.Builder(
@@ -183,7 +188,7 @@ public class GoogleSheetActivityRepository implements ActivityRepository {
         Duration.ofHours(durationTemporalAccessor.get(ChronoField.HOUR_OF_AMPM))
             .plusMinutes(durationTemporalAccessor.get(ChronoField.MINUTE_OF_HOUR))
             .plusSeconds(durationTemporalAccessor.get(ChronoField.SECOND_OF_MINUTE));
-    var patient = patientRepository.findByFullName(row.get(1).toString());
+    var patient = legacyPatientRepository.findByFullName(row.get(1).toString());
     Optional<Location> location = getLocation(userId, row.get(4).toString());
     var activityType = Activity.ActivityType.valueOfFrench(row.get(3).toString());
     if (patient.isEmpty() || location.isEmpty()) {
@@ -217,7 +222,7 @@ public class GoogleSheetActivityRepository implements ActivityRepository {
   }
 
   List<Object> toRow(Activity activity) {
-    var patient = patientRepository.findById(activity.patientId());
+    var patient = patientRepository.findById(activity.userId(), activity.patientId());
     return List.of(
         activity.beginDate().format(WRITE_DATE_TIME_FORMATTER),
         patient.map(Patient::fullName).orElse(""),
