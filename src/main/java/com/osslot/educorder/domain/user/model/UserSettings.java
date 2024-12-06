@@ -1,10 +1,12 @@
 package com.osslot.educorder.domain.user.model;
 
+import com.osslot.educorder.domain.activities.model.Location;
 import com.osslot.educorder.domain.user.model.User.UserId;
 import lombok.Builder;
 
 @Builder
-public record UserSettings(UserId userId, GoogleCalendarSettings googleCalendarSettings) {
+public record UserSettings(
+    UserId userId, Location defaultLocation, GoogleCalendarSettings googleCalendarSettings) {
 
   @Builder
   public record GoogleCalendarSettings(CalendarId calendarId, boolean synchroEnabled) {

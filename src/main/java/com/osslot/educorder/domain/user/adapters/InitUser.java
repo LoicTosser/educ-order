@@ -1,5 +1,6 @@
 package com.osslot.educorder.domain.user.adapters;
 
+import com.osslot.educorder.domain.activities.model.Location;
 import com.osslot.educorder.domain.user.model.User;
 import com.osslot.educorder.domain.user.model.UserSettings;
 import com.osslot.educorder.domain.user.model.UserSettings.GoogleCalendarSettings.CalendarId;
@@ -26,6 +27,7 @@ public class InitUser {
       userSettingsRepository.add(
           UserSettings.builder()
               .userId(user.id())
+              .defaultLocation(new Location("Home", "13 rue saint vincent 33850 LEOGNAN"))
               .googleCalendarSettings(
                   UserSettings.GoogleCalendarSettings.builder()
                       .calendarId(new CalendarId(CALENDAR_ID))

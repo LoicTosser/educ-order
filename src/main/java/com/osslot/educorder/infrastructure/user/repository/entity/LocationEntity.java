@@ -1,4 +1,4 @@
-package com.osslot.educorder.infrastructure.activities.repository.entity;
+package com.osslot.educorder.infrastructure.user.repository.entity;
 
 import com.osslot.educorder.domain.activities.model.Location;
 import lombok.AllArgsConstructor;

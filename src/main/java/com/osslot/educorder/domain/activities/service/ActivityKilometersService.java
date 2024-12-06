@@ -6,10 +6,11 @@ import com.osslot.educorder.domain.activities.model.ActivityKilometers;
 import com.osslot.educorder.domain.activities.model.Institution;
 import com.osslot.educorder.domain.activities.model.Location;
 import com.osslot.educorder.domain.activities.repository.ActivityRepository;
-import com.osslot.educorder.domain.activities.repository.LocationRepository;
 import com.osslot.educorder.domain.activities.repository.RideDistanceRepository;
 import com.osslot.educorder.domain.patient.model.Patient;
+import com.osslot.educorder.domain.user.adapters.UserSettingsAdapter;
 import com.osslot.educorder.domain.user.model.User.UserId;
+import com.osslot.educorder.domain.user.model.UserSettings;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -18,10 +19,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -30,33 +33,18 @@ public class ActivityKilometersService {
   public static final String HOME_LOCATION_NAME = "Domicile";
   private final ActivityRepository activityRepository;
   private final RideDistanceRepository rideDistanceRepository;
-  private final Location homeLocation;
+  private final UserSettingsAdapter userSettingsAdapter;
+  private final Map<UserId, Location> homeLocations = new ConcurrentHashMap<>();
   private static final Set<ActivityType> activitiesWithKilometers =
       Set.of(ActivityType.CARE, ActivityType.MEETING, ActivityType.RESPITE_CARE);
 
   public ActivityKilometersService(
       ActivityRepository firestoreActivityRepository,
-      LocationRepository locationRepository,
-      RideDistanceRepository rideDistanceRepository) {
+      RideDistanceRepository rideDistanceRepository,
+      UserSettingsAdapter userSettingsAdapter) {
     this.activityRepository = firestoreActivityRepository;
     this.rideDistanceRepository = rideDistanceRepository;
-    this.homeLocation = locationRepository.findByName(HOME_LOCATION_NAME).orElseThrow();
-  }
-
-  public Map<Patient.PatientId, List<ActivityKilometers>> getActivitiesKilometersPerPatientBy(
-      int month, int year, Institution institution) {
-    var activitiesKilometers = getActivitiesKilometersBy(year, month, institution);
-    return activitiesKilometers.collect(
-        Collectors.toMap(
-            activityKilometers -> activityKilometers.activity().patientId(),
-            List::of,
-            (list1, list2) -> Stream.concat(list1.stream(), list2.stream()).distinct().toList()));
-  }
-
-  public Stream<ActivityKilometers> getActivitiesKilometersBy(
-      int year, int month, Institution institution) {
-    var activities = activityRepository.findAllByMonth(year, month);
-    return getActivityKilometers(institution, activities);
+    this.userSettingsAdapter = userSettingsAdapter;
   }
 
   public Map<Patient.PatientId, List<ActivityKilometers>> getActivitiesKilometersPerPatientBetween(
@@ -134,16 +122,26 @@ public class ActivityKilometersService {
   private Location getPreviousLocation(Activity activity, Activity previousActivity) {
     if (previousActivity == null
         || !activity.institution().equals(previousActivity.institution())) {
-      return this.homeLocation;
+      return getHomeLocation(activity.userId());
     }
     return previousActivity.location();
   }
 
   private Location getNextLocation(Activity activity, Activity nextActivity) {
     if (nextActivity == null || !activity.institution().equals(nextActivity.institution())) {
-      return this.homeLocation;
+      return getHomeLocation(activity.userId());
     }
     return nextActivity.location();
+  }
+
+  private @Nullable Location getHomeLocation(UserId userId) {
+    return homeLocations.computeIfAbsent(
+        userId,
+        aUserId ->
+            userSettingsAdapter
+                .findByUserId(userId)
+                .map(UserSettings::defaultLocation)
+                .orElse(null));
   }
 
   private Long getDistanceTo(

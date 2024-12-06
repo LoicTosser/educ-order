@@ -1,4 +1,4 @@
-package com.osslot.educorder.domain.adapters;
+package com.osslot.educorder.domain.patient.adapters;
 
 import com.osslot.educorder.domain.patient.model.Patient;
 import com.osslot.educorder.domain.patient.repository.PatientRepository;

@@ -19,7 +19,7 @@ public class OrderService {
   }
 
   public List<Order> createOrdersForMonth(int year, int month) {
-    var activities = firestoreActivityRepository.findAllByMonth(year, month);
+    //    var activities = firestoreActivityRepository.findAllByMonth(year, month);
     /* TODO group by patient */
     /* TODO order from activity */
     /* TODO create orders by patient */

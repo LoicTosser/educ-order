@@ -17,7 +17,6 @@ import com.osslot.educorder.infrastructure.activities.service.GoogleDriveService
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -82,17 +81,12 @@ public class GoogleSheetActivityRepository implements ActivityRepository {
   }
 
   @Override
-  public List<Activity> findAllByMonth(int year, int month) {
-    return findAllFilteredBy(row -> matchMonth(month, year, row));
-  }
-
-  @Override
   public List<Activity> findAllBetween(UserId userId, ZonedDateTime start, ZonedDateTime end) {
-    return findAllFilteredBy(row -> isBetween(row, start, end));
+    return findAllFilteredBy(userId, row -> isBetween(row, start, end));
   }
 
   @NotNull
-  private List<Activity> findAllFilteredBy(Predicate<List<Object>> rowFilter) {
+  private List<Activity> findAllFilteredBy(UserId userId, Predicate<List<Object>> rowFilter) {
     try {
       var response =
           service
@@ -111,7 +105,7 @@ public class GoogleSheetActivityRepository implements ActivityRepository {
                       && row.getFirst() != null
                       && !row.getFirst().toString().trim().isEmpty())
           .filter(rowFilter)
-          .map(this::fromRow)
+          .map(row -> fromRow(userId, row))
           .filter(Optional::isPresent)
           .map(Optional::orElseThrow)
           .toList();
@@ -177,14 +171,7 @@ public class GoogleSheetActivityRepository implements ActivityRepository {
     return zonedDateTime.isAfter(start) && zonedDateTime.isBefore(end);
   }
 
-  private static boolean matchMonth(int month, int year, List<Object> row) {
-    var dateTimeAsStr = row.getFirst();
-    if (dateTimeAsStr == null || dateTimeAsStr.toString().trim().isEmpty()) return false;
-    var localDate = LocalDate.parse(dateTimeAsStr.toString().trim(), READ_DATE_TIME_FORMATTER);
-    return localDate.getMonth().getValue() == month && localDate.getYear() == year;
-  }
-
-  Optional<Activity> fromRow(List<Object> row) {
+  Optional<Activity> fromRow(UserId userId, List<Object> row) {
     var rowValue = row.stream().map(Object::toString).collect(Collectors.joining(", "));
     log.info(rowValue);
     var date =
@@ -197,7 +184,7 @@ public class GoogleSheetActivityRepository implements ActivityRepository {
             .plusMinutes(durationTemporalAccessor.get(ChronoField.MINUTE_OF_HOUR))
             .plusSeconds(durationTemporalAccessor.get(ChronoField.SECOND_OF_MINUTE));
     var patient = patientRepository.findByFullName(row.get(1).toString());
-    Optional<Location> location = getLocation(row.get(4).toString());
+    Optional<Location> location = getLocation(userId, row.get(4).toString());
     var activityType = Activity.ActivityType.valueOfFrench(row.get(3).toString());
     if (patient.isEmpty() || location.isEmpty()) {
       log.error("Patient or location not found for row {}", rowValue);
@@ -205,7 +192,7 @@ public class GoogleSheetActivityRepository implements ActivityRepository {
     }
     return Optional.of(
         new Activity(
-            null,
+            userId,
             patient.orElseThrow().id(),
             date,
             duration,
@@ -214,15 +201,15 @@ public class GoogleSheetActivityRepository implements ActivityRepository {
             activityType));
   }
 
-  private Optional<Location> getLocation(String locationValue) {
+  private Optional<Location> getLocation(UserId userId, String locationValue) {
     if (locationValue == null || locationValue.isEmpty()) {
       return Optional.empty();
     }
-    var location = locationRepository.findByAddress(locationValue);
+    var location = locationRepository.findByAddress(userId, locationValue);
     if (location.isPresent()) {
       return location;
     }
-    location = locationRepository.findByName(locationValue);
+    location = locationRepository.findByName(userId, locationValue);
     if (location.isPresent()) {
       return location;
     }

@@ -1,4 +1,4 @@
-package com.osslot.educorder.infrastructure.activities.repository.entity;
+package com.osslot.educorder.infrastructure.user.repository.entity;
 
 import com.osslot.educorder.domain.user.model.User.UserId;
 import com.osslot.educorder.domain.user.model.UserSettings;
@@ -18,15 +18,20 @@ public class UserSettingsEntity {
   public static final String PATH = "user_settings";
 
   private String userId;
+  private LocationEntity defaultLocation;
   private GoogleCalendarSettingsEntity googleCalendarSettings;
 
   public UserSettings toDomain() {
-    return new UserSettings(new UserId(getUserId()), getGoogleCalendarSettings().toDomain());
+    return new UserSettings(
+        new UserId(getUserId()),
+        defaultLocation.toDomain(),
+        getGoogleCalendarSettings().toDomain());
   }
 
   public static UserSettingsEntity fromDomain(UserSettings userSettings) {
     return new UserSettingsEntity(
         userSettings.userId().id(),
+        LocationEntity.fromDomain(userSettings.defaultLocation()),
         new GoogleCalendarSettingsEntity(
             userSettings.googleCalendarSettings().calendarId().id(),
             userSettings.googleCalendarSettings().synchroEnabled()));

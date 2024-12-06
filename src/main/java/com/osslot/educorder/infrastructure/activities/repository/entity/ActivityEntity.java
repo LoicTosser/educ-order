@@ -8,6 +8,7 @@ import com.osslot.educorder.domain.activities.model.Activity.ActivityType;
 import com.osslot.educorder.domain.activities.model.Institution;
 import com.osslot.educorder.domain.patient.model.Patient;
 import com.osslot.educorder.domain.user.model.User.UserId;
+import com.osslot.educorder.infrastructure.user.repository.entity.LocationEntity;
 import java.time.Instant;
 import java.time.ZoneId;
 import lombok.AllArgsConstructor;

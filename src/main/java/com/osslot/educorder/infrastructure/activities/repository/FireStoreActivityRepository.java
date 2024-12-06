@@ -30,11 +30,6 @@ public class FireStoreActivityRepository implements ActivityRepository {
   private final Firestore firestore;
 
   @Override
-  public List<Activity> findAllByMonth(int year, int month) {
-    return List.of();
-  }
-
-  @Override
   public List<Activity> findAllBetween(UserId userId, ZonedDateTime start, ZonedDateTime end) {
     var startUTC = start.withZoneSameInstant(ZoneOffset.UTC);
     var endUTC = end.withZoneSameInstant(ZoneOffset.UTC);

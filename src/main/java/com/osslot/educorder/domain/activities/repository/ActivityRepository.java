@@ -7,8 +7,6 @@ import java.util.List;
 
 public interface ActivityRepository {
 
-  List<Activity> findAllByMonth(int year, int month);
-
   List<Activity> findAllBetween(UserId userId, ZonedDateTime start, ZonedDateTime end);
 
   List<Activity> add(List<Activity> activities);

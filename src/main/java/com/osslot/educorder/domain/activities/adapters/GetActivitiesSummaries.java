@@ -31,6 +31,7 @@ public class GetActivitiesSummaries {
     var patientsByIds = patientService.findAllByIds(userId, patientIds);
     var activitiesByInstitutionsAndPatientsAndTypes =
         activities.stream()
+            .filter(activity -> patientsByIds.containsKey(activity.patientId()))
             .collect(
                 Collectors.groupingBy(
                     GetActivitiesSummaries::getInstitutionFromActivity,

@@ -3,10 +3,11 @@ package com.osslot.educorder.infrastructure.activities.repository.mapper;
 import com.google.api.services.calendar.model.Event;
 import com.osslot.educorder.domain.activities.model.Activity;
 import com.osslot.educorder.domain.activities.model.Location;
-import com.osslot.educorder.domain.activities.repository.LocationRepository;
 import com.osslot.educorder.domain.patient.model.Patient;
 import com.osslot.educorder.domain.patient.repository.PatientRepository;
+import com.osslot.educorder.domain.user.adapters.UserSettingsAdapter;
 import com.osslot.educorder.domain.user.model.User.UserId;
+import com.osslot.educorder.domain.user.model.UserSettings;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Optional;
@@ -19,9 +20,8 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @AllArgsConstructor
 public class ActivityMapper {
-
   private final PatientRepository patientRepository;
-  private final LocationRepository locationRepository;
+  private final UserSettingsAdapter userSettingsAdapter;
 
   public Optional<Activity> fromEvent(UserId userId, Event event) {
     log.info(
@@ -33,7 +33,7 @@ public class ActivityMapper {
     var eventId = event.getId();
     var activityType = toActivityType(event);
     var patient = toPatient(event);
-    var location = toLocation(event);
+    var location = toLocation(userId, event);
     if (activityType.isEmpty() || patient.isEmpty() || location.isEmpty()) {
       return Optional.empty();
     }
@@ -76,20 +76,16 @@ public class ActivityMapper {
         .findFirst();
   }
 
-  private Optional<Location> toLocation(Event event) {
+  private Optional<Location> toLocation(UserId userId, Event event) {
     String eventLocation = event.getLocation();
     if (eventLocation != null) {
-      var location = locationRepository.findByAddress(eventLocation);
-      if (location.isPresent()) {
-        return location;
-      }
       return Optional.of(new Location("", event.getLocation()));
     }
-    return getDomicile();
+    return getHomeLocation(userId);
   }
 
-  private Optional<Location> getDomicile() {
-    return locationRepository.findByName("Domicile");
+  private Optional<Location> getHomeLocation(UserId userId) {
+    return userSettingsAdapter.findByUserId(userId).map(UserSettings::defaultLocation);
   }
 
   private Optional<Activity.ActivityType> toActivityType(Event event) {

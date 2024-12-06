@@ -11,7 +11,6 @@ import com.google.maps.errors.ApiException;
 import com.google.maps.model.TravelMode;
 import com.osslot.educorder.application.EducOrderApplication;
 import com.osslot.educorder.domain.activities.model.Location;
-import com.osslot.educorder.domain.activities.repository.LocationRepository;
 import com.osslot.educorder.domain.activities.repository.RideDistanceRepository;
 import com.osslot.educorder.infrastructure.activities.service.GoogleDriveService;
 import java.io.IOException;
@@ -35,13 +34,11 @@ public class GoogleSheetRideDistanceRepository implements RideDistanceRepository
   private final Sheets service;
   private final Map<Ride, Long> rideDistances;
   private final GoogleDriveService googleDriveService;
-  private final LocationRepository locationRepository;
   private final String googleMapsApiKey;
 
   public GoogleSheetRideDistanceRepository(
       GoogleCredentials googleCredentials,
       GoogleDriveService googleDriveService,
-      LocationRepository locationRepository,
       @Value("${google.maps.api.key}") String googleMapsApiKey)
       throws GeneralSecurityException, IOException {
     this.googleMapsApiKey = googleMapsApiKey;
@@ -53,7 +50,6 @@ public class GoogleSheetRideDistanceRepository implements RideDistanceRepository
             .setApplicationName(EducOrderApplication.APPLICATION_NAME)
             .build();
     this.googleDriveService = googleDriveService;
-    this.locationRepository = locationRepository;
     this.rideDistances = computeRideDistances();
   }
 
@@ -90,13 +86,9 @@ public class GoogleSheetRideDistanceRepository implements RideDistanceRepository
 
   private Stream<RideDistance> toRidesDistances(List<Object> row) {
     String fromAddress = row.getFirst().toString().strip();
-    var fromLocation =
-        locationRepository
-            .findByAddress(fromAddress)
-            .orElseGet(() -> new Location("", fromAddress));
+    var fromLocation = new Location("", fromAddress);
     String toAddress = row.get(1).toString().strip();
-    var toLocation =
-        locationRepository.findByAddress(toAddress).orElseGet(() -> new Location("", toAddress));
+    var toLocation = new Location("", toAddress);
     return Stream.of(
         new RideDistance(new Ride(fromLocation, toLocation), Long.parseLong(row.get(2).toString())),
         new RideDistance(
@@ -115,7 +107,7 @@ public class GoogleSheetRideDistanceRepository implements RideDistanceRepository
                     .orElse(null)));
   }
 
-  Optional<RideDistance> computeDistanceAndStore(Ride ride) {
+  private Optional<RideDistance> computeDistanceAndStore(Ride ride) {
     var distance = computeRideDistance(ride);
     if (distance.isEmpty()) {
       return Optional.empty();
@@ -171,8 +163,8 @@ public class GoogleSheetRideDistanceRepository implements RideDistanceRepository
                   Math.round(Long.valueOf(distanceInMeters.orElseThrow()).floatValue() / 1000))
               .longValue());
     } catch (ApiException | InterruptedException | IOException e) {
-      log.error("Error While computing distance of ride " + ride, e);
-      throw new RuntimeException(e);
+      log.error("Error While computing distance of ride {}", ride, e);
+      return Optional.empty();
     }
   }
 
