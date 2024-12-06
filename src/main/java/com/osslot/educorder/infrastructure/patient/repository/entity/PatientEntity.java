@@ -1,4 +1,4 @@
-package com.osslot.educorder.infrastructure.activities.repository.entity;
+package com.osslot.educorder.infrastructure.patient.repository.entity;
 
 import com.osslot.educorder.domain.activities.model.Institution;
 import com.osslot.educorder.domain.patient.model.Patient;
@@ -14,6 +14,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class PatientEntity {
+
+  private static final String CURRENT_VERSION = "0.0.1";
+
+  private String version;
   private String id;
   private String userId;
   private String firstName;
@@ -23,6 +27,7 @@ public class PatientEntity {
 
   public static PatientEntity fromDomain(Patient patient) {
     return new PatientEntity(
+        CURRENT_VERSION,
         patient.id().id(),
         patient.userId().id(),
         patient.firstName(),

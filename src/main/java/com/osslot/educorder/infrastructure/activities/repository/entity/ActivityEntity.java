@@ -24,6 +24,9 @@ import lombok.With;
 @NoArgsConstructor
 public class ActivityEntity {
 
+  private static final String CURRENT_VERSION = "0.0.1";
+
+  private String version;
   private String id;
   private String userId;
   private String eventId;
@@ -40,6 +43,7 @@ public class ActivityEntity {
 
   public static ActivityEntity fromDomain(Activity activity) {
     return new ActivityEntity(
+        CURRENT_VERSION,
         activity.id(),
         activity.userId().id(),
         activity.eventId(),

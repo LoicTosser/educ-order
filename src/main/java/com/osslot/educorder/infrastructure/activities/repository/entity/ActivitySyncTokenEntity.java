@@ -13,8 +13,11 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ActivitySyncTokenEntity {
 
+  private static final String CURRENT_VERSION = "0.0.1";
+
   public static final String PATH = "activities_sync_token";
 
+  private String version;
   private String userId;
   private String syncToken;
 
@@ -24,6 +27,6 @@ public class ActivitySyncTokenEntity {
 
   public static ActivitySyncTokenEntity fromDomain(ActivitySyncToken activitySyncToken) {
     return new ActivitySyncTokenEntity(
-        activitySyncToken.userId().id(), activitySyncToken.syncToken());
+        CURRENT_VERSION, activitySyncToken.userId().id(), activitySyncToken.syncToken());
   }
 }

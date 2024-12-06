@@ -16,7 +16,9 @@ import lombok.Setter;
 public class UserSettingsEntity {
 
   public static final String PATH = "user_settings";
+  private static final String CURRENT_VERSION = "0.0.1";
 
+  private String version;
   private String userId;
   private LocationEntity defaultLocation;
   private GoogleCalendarSettingsEntity googleCalendarSettings;
@@ -30,6 +32,7 @@ public class UserSettingsEntity {
 
   public static UserSettingsEntity fromDomain(UserSettings userSettings) {
     return new UserSettingsEntity(
+        CURRENT_VERSION,
         userSettings.userId().id(),
         LocationEntity.fromDomain(userSettings.defaultLocation()),
         new GoogleCalendarSettingsEntity(

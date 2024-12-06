@@ -12,11 +12,14 @@ import lombok.Setter;
 @NoArgsConstructor
 public class LocationEntity {
 
+  private static final String CURRENT_VERSION = "0.0.1";
+
+  private String version;
   private String name;
   private String address;
 
   public static LocationEntity fromDomain(Location location) {
-    return new LocationEntity(location.name(), location.address());
+    return new LocationEntity(CURRENT_VERSION, location.name(), location.address());
   }
 
   public Location toDomain() {
