@@ -8,6 +8,7 @@ import com.osslot.educorder.domain.user.model.User.UserId;
 import com.osslot.educorder.domain.user.model.UserSettings.GoogleCalendarSettings.CalendarId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.With;
 import lombok.extern.slf4j.Slf4j;
@@ -63,7 +64,7 @@ public class ImportActivitiesService {
               || nextSyncToken.get().syncToken() == null
               || nextSyncToken.get().syncToken().isEmpty()) {
             log.info("Sync token is null, first init");
-            init(synchronizeCalendarRequest);
+            init(synchronizeCalendarRequest.withNextSyncToken(nextSyncToken.orElse(null)));
             return;
           }
 
@@ -72,7 +73,9 @@ public class ImportActivitiesService {
           activitySyncTokenRepository.setCurrentActivitySyncToken(
               synchronizeCalendarRequest.userId(),
               new ActivitySyncToken(
-                  synchronizeCalendarRequest.userId(), fetchResult.nextSyncToken()));
+                  nextSyncToken.get().id(),
+                  synchronizeCalendarRequest.userId(),
+                  fetchResult.nextSyncToken()));
           log.info("Sync done, next sync token: {}", fetchResult.nextSyncToken());
         });
   }
@@ -101,7 +104,12 @@ public class ImportActivitiesService {
     log.info("Initial import of activities done, next sync token: {}", fetchResult.nextSyncToken());
     activitySyncTokenRepository.setCurrentActivitySyncToken(
         synchronizeCalendarRequest.userId(),
-        new ActivitySyncToken(synchronizeCalendarRequest.userId(), fetchResult.nextSyncToken()));
+        new ActivitySyncToken(
+            synchronizeCalendarRequest.nextSyncToken() == null
+                ? new ActivitySyncToken.ActivitySyncTokenId(UUID.randomUUID().toString())
+                : synchronizeCalendarRequest.nextSyncToken().id(),
+            synchronizeCalendarRequest.userId(),
+            fetchResult.nextSyncToken()));
   }
 
   private static @NotNull ZonedDateTime fromDateTime() {

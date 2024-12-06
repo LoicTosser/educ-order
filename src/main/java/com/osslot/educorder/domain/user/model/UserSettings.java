@@ -6,10 +6,16 @@ import lombok.Builder;
 
 @Builder
 public record UserSettings(
-    UserId userId, Location defaultLocation, GoogleCalendarSettings googleCalendarSettings) {
+    UserSettingsId userSettingsId,
+    UserId userId,
+    Location defaultLocation,
+    GoogleCalendarSettings googleCalendarSettings) {
 
   @Builder
   public record GoogleCalendarSettings(CalendarId calendarId, boolean synchroEnabled) {
     public record CalendarId(String id) {}
   }
+
+  @Builder
+  public record UserSettingsId(String id) {}
 }

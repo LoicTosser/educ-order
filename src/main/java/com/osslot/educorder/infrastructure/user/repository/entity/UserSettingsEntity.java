@@ -4,40 +4,46 @@ import com.osslot.educorder.domain.user.model.User.UserId;
 import com.osslot.educorder.domain.user.model.UserSettings;
 import com.osslot.educorder.domain.user.model.UserSettings.GoogleCalendarSettings;
 import com.osslot.educorder.domain.user.model.UserSettings.GoogleCalendarSettings.CalendarId;
+import com.osslot.educorder.infrastructure.common.repository.entity.MultiTenantEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserSettingsEntity {
+@SuperBuilder
+public class UserSettingsEntity extends MultiTenantEntity {
 
   public static final String PATH = "user_settings";
   private static final String CURRENT_VERSION = "0.0.1";
 
-  private String version;
-  private String userId;
   private LocationEntity defaultLocation;
   private GoogleCalendarSettingsEntity googleCalendarSettings;
 
   public UserSettings toDomain() {
-    return new UserSettings(
-        new UserId(getUserId()),
-        defaultLocation.toDomain(),
-        getGoogleCalendarSettings().toDomain());
+    return UserSettings.builder()
+        .userSettingsId(UserSettings.UserSettingsId.builder().id(getId()).build())
+        .userId(new UserId(getUserId()))
+        .defaultLocation(defaultLocation.toDomain())
+        .googleCalendarSettings(googleCalendarSettings.toDomain())
+        .build();
   }
 
   public static UserSettingsEntity fromDomain(UserSettings userSettings) {
-    return new UserSettingsEntity(
-        CURRENT_VERSION,
-        userSettings.userId().id(),
-        LocationEntity.fromDomain(userSettings.defaultLocation()),
-        new GoogleCalendarSettingsEntity(
-            userSettings.googleCalendarSettings().calendarId().id(),
-            userSettings.googleCalendarSettings().synchroEnabled()));
+    return UserSettingsEntity.builder()
+        .version(CURRENT_VERSION)
+        .id(userSettings.userSettingsId().id())
+        .userId(userSettings.userId().id())
+        .defaultLocation(LocationEntity.fromDomain(userSettings.defaultLocation()))
+        .googleCalendarSettings(
+            new GoogleCalendarSettingsEntity(
+                userSettings.googleCalendarSettings().calendarId().id(),
+                userSettings.googleCalendarSettings().synchroEnabled()))
+        .build();
   }
 
   @Getter
