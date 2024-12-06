@@ -11,7 +11,7 @@ googleApiCalendar = { group = "com.google.apis", name = "google-api-services-cal
 googleApiDrive = { group = "com.google.apis", name = "google-api-services-drive", version = "v3-rev20241027-2.0.0" }
 googleApiDocs = { group = "com.google.apis", name = "google-api-services-docs", version = "v1-rev20230929-2.0.0" }
 googleMaps = { group = "com.google.maps", name = "google-maps-services", version = "2.2.0" }
-fireBaseAdmin = { group = "com.google.firebase", name = "firebase-admin", version = "9.4.1" }
+fireBaseAdmin = { group = "com.google.firebase", name = "firebase-admin", version = "9.4.2" }
 gcloudTestContainers = { group = "org.testcontainers", name = "gcloud", version = "1.20.4" }
 instancio =  { group="org.instancio", name="instancio-junit", version="5.2.0"}
 [bundles]
