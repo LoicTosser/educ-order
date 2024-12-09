@@ -11,6 +11,7 @@ import com.osslot.educorder.application.EducOrderApplication;
 import com.osslot.educorder.domain.activities.model.ActivityKilometers;
 import com.osslot.educorder.domain.activities.repository.ApajhKilometersFilesRepository;
 import com.osslot.educorder.domain.patient.model.Patient;
+import com.osslot.educorder.domain.user.model.User.UserId;
 import com.osslot.educorder.infrastructure.activities.legacy.GoogleSheetActivityExporter;
 import com.osslot.educorder.infrastructure.activities.service.GoogleDriveService;
 import java.io.IOException;
@@ -19,6 +20,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,41 +30,32 @@ public class GoogleSheetApajhKilometersFilesRepository implements ApajhKilometer
   private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
   private static final String RANGE_DATA = "data!A2:D2";
   private static final String APAJH_MONTH_KILOMETERS_RANGE = "kilomètres!A2:Z1000";
-  private final Sheets service;
   private final GoogleDriveService googleDriveService;
+  private final GoogleCredentials googleCredentials;
 
   public GoogleSheetApajhKilometersFilesRepository(
-      GoogleCredentials googleCredentials, GoogleDriveService googleDriveService)
-      throws GeneralSecurityException, IOException {
-    NetHttpTransport transport = GoogleNetHttpTransport.newTrustedTransport();
-    this.service =
-        new Sheets.Builder(transport, JSON_FACTORY, googleCredentials.getCredentials(transport))
-            .setApplicationName(EducOrderApplication.APPLICATION_NAME)
-            .build();
+      GoogleCredentials googleCredentials, GoogleDriveService googleDriveService) {
     this.googleDriveService = googleDriveService;
+    this.googleCredentials = googleCredentials;
   }
 
   @Override
   public Optional<String> createPatientFilesFor(
-      int year, int month, Patient patient, List<ActivityKilometers> activityKilometersList) {
-    return pushAphjhCharges(patient, month, year, activityKilometersList);
-  }
-
-  @Override
-  public Optional<String> createPatientFilesFor(
+      UserId userId,
       ZonedDateTime start,
       ZonedDateTime end,
       Patient patient,
       List<ActivityKilometers> activityKilometersList) {
-    return pushAphjhCharges(patient, start, end, activityKilometersList);
+    return pushAphjhCharges(userId, patient, start, end, activityKilometersList);
   }
 
   public void initApajhMonthlyPatientFile(
-      Patient patient, int month, int year, String patientFileId) {
+      UserId userId, Patient patient, int month, int year, String patientFileId) {
     try {
       var valueRange = new ValueRange();
       valueRange.setValues(List.of(List.of(patient.lastName(), patient.firstName(), month, year)));
       valueRange.setRange(RANGE_DATA);
+      var service = getService(userId);
       var request =
           service
               .spreadsheets()
@@ -75,35 +68,39 @@ public class GoogleSheetApajhKilometersFilesRepository implements ApajhKilometer
     }
   }
 
-  public Optional<String> pushAphjhCharges(
-      Patient patient, int month, int year, List<ActivityKilometers> aphjhCharges) {
+  @NotNull
+  private Sheets getService(UserId userId) {
+    NetHttpTransport transport = null;
     try {
-      var patientFileId = this.googleDriveService.createApajhPatientFile(patient, month, year);
-      if (patientFileId.isEmpty()) {
-        return Optional.empty();
-      }
-      this.initApajhMonthlyPatientFile(patient, month, year, patientFileId.orElseThrow());
-      pushAphjhCharges(aphjhCharges, patientFileId);
-      return patientFileId;
-    } catch (IOException e) {
-      log.error("An error occurred", e);
-      return Optional.empty();
+      transport = GoogleNetHttpTransport.newTrustedTransport();
+    } catch (GeneralSecurityException | IOException e) {
+      throw new RuntimeException(e);
     }
+    return new Sheets.Builder(
+            transport,
+            JSON_FACTORY,
+            googleCredentials
+                .getCredentials(userId)
+                .orElseThrow(() -> new IllegalStateException("Credentials not found")))
+        .setApplicationName(EducOrderApplication.APPLICATION_NAME)
+        .build();
   }
 
   public Optional<String> pushAphjhCharges(
+      UserId userId,
       Patient patient,
       ZonedDateTime start,
       ZonedDateTime end,
       List<ActivityKilometers> aphjhCharges) {
     try {
-      var patientFileId = this.googleDriveService.createApajhPatientFile(patient, start, end);
+      var patientFileId =
+          this.googleDriveService.createApajhPatientFile(userId, patient, start, end);
       if (patientFileId.isEmpty()) {
         return Optional.empty();
       }
       this.initApajhMonthlyPatientFile(
-          patient, start.getMonthValue(), start.getYear(), patientFileId.orElseThrow());
-      pushAphjhCharges(aphjhCharges, patientFileId);
+          userId, patient, start.getMonthValue(), start.getYear(), patientFileId.orElseThrow());
+      pushAphjhCharges(userId, aphjhCharges, patientFileId);
       return patientFileId;
     } catch (IOException e) {
       log.error("An error occurred", e);
@@ -112,29 +109,28 @@ public class GoogleSheetApajhKilometersFilesRepository implements ApajhKilometer
   }
 
   private void pushAphjhCharges(
-      List<ActivityKilometers> aphjhCharges, Optional<String> patientFileId) throws IOException {
+      UserId userId, List<ActivityKilometers> aphjhCharges, Optional<String> patientFileId)
+      throws IOException {
     String valueInputOption = "USER_ENTERED";
     List<List<Object>> values =
         aphjhCharges.stream()
             .map(
                 activityKilometers -> {
-                  List<Object> row =
-                      List.of(
-                          activityKilometers
-                              .activity()
-                              .beginDate()
-                              .format(GoogleSheetActivityExporter.WRITE_DATE_TIME_FORMATTER),
-                          activityKilometers.activity().location().address(),
-                          activityKilometers.from().address(),
-                          activityKilometers.to().address(),
-                          activityKilometers.distanceFrom() + activityKilometers.distanceTo());
-                  return row;
+                  return List.<Object>of(
+                      activityKilometers
+                          .activity()
+                          .beginDate()
+                          .format(GoogleSheetActivityExporter.WRITE_DATE_TIME_FORMATTER),
+                      activityKilometers.activity().location().address(),
+                      activityKilometers.from().address(),
+                      activityKilometers.to().address(),
+                      activityKilometers.distanceFrom() + activityKilometers.distanceTo());
                 })
             .toList();
 
     ValueRange body = new ValueRange().setValues(values);
     UpdateValuesResponse result =
-        service
+        getService(userId)
             .spreadsheets()
             .values()
             .update(patientFileId.orElseThrow(), APAJH_MONTH_KILOMETERS_RANGE, body)

@@ -1,7 +1,6 @@
 package com.osslot.educorder.infrastructure.activities.repository;
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.docs.v1.Docs;
@@ -17,6 +16,7 @@ import com.osslot.educorder.application.EducOrderApplication;
 import com.osslot.educorder.domain.activities.model.ActivityKilometers;
 import com.osslot.educorder.domain.activities.repository.AdiaphKilometersFilesRepository;
 import com.osslot.educorder.domain.patient.model.Patient;
+import com.osslot.educorder.domain.user.model.User.UserId;
 import com.osslot.educorder.infrastructure.activities.service.GoogleDriveService;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -38,50 +39,43 @@ public class GoogleDocAdiaphKilometersFilesRepository implements AdiaphKilometer
   private static final DateTimeFormatter WRITE_DATE_TIME_FORMATTER =
       DateTimeFormatter.ofPattern("dd/MM/yyyy");
   private final GoogleDriveService googleDriveService;
-
-  private final Docs docs;
+  private final GoogleCredentials googleCredentials;
 
   public GoogleDocAdiaphKilometersFilesRepository(
-      GoogleCredentials googleCredentials, GoogleDriveService googleDriveService)
-      throws GeneralSecurityException, IOException {
+      GoogleCredentials googleCredentials, GoogleDriveService googleDriveService) {
     this.googleDriveService = googleDriveService;
-    NetHttpTransport transport = GoogleNetHttpTransport.newTrustedTransport();
-    docs =
-        new Docs.Builder(transport, JSON_FACTORY, googleCredentials.getCredentials(transport))
-            .setApplicationName(EducOrderApplication.APPLICATION_NAME)
-            .build();
+    this.googleCredentials = googleCredentials;
   }
 
-  @Override
-  public Optional<String> createPatientFilesForMonth(
-      int year, int month, Patient patient, List<ActivityKilometers> activityKilometersList) {
-    var patientFileId = googleDriveService.createAdiaphPatientFile(patient, month, year);
-    if (patientFileId.isEmpty()) {
-      return Optional.empty();
+  @NotNull
+  private Docs getDocs(UserId userId) {
+    try {
+      return new Docs.Builder(
+              GoogleNetHttpTransport.newTrustedTransport(),
+              JSON_FACTORY,
+              googleCredentials
+                  .getCredentials(userId)
+                  .orElseThrow(() -> new RuntimeException("No credentials")))
+          .setApplicationName(EducOrderApplication.APPLICATION_NAME)
+          .build();
+    } catch (GeneralSecurityException | IOException e) {
+      throw new RuntimeException(e);
     }
-    initPatientFile(
-        patientFileId.orElseThrow(),
-        patient,
-        month,
-        year,
-        activityKilometersList.stream()
-            .map(ActivityKilometers::getTotalDistance)
-            .reduce(0L, Long::sum));
-    updateRows(patientFileId.orElseThrow(), activityKilometersList);
-    return patientFileId;
   }
 
   @Override
   public Optional<String> createPatientFilesFor(
+      UserId userId,
       ZonedDateTime start,
       ZonedDateTime end,
       Patient patient,
       List<ActivityKilometers> activityKilometersList) {
-    var patientFileId = googleDriveService.createAdiaphPatientFile(patient, start, end);
+    var patientFileId = googleDriveService.createAdiaphPatientFile(userId, patient, start, end);
     if (patientFileId.isEmpty()) {
       return Optional.empty();
     }
     initPatientFile(
+        userId,
         patientFileId.orElseThrow(),
         patient,
         start.getMonthValue(),
@@ -89,12 +83,17 @@ public class GoogleDocAdiaphKilometersFilesRepository implements AdiaphKilometer
         activityKilometersList.stream()
             .map(ActivityKilometers::getTotalDistance)
             .reduce(0L, Long::sum));
-    updateRows(patientFileId.orElseThrow(), activityKilometersList);
+    updateRows(userId, patientFileId.orElseThrow(), activityKilometersList);
     return patientFileId;
   }
 
   private void initPatientFile(
-      String patientFileId, Patient patient, int month, int year, Long totalDistance) {
+      UserId userId,
+      String patientFileId,
+      Patient patient,
+      int month,
+      int year,
+      Long totalDistance) {
     try {
       var requests =
           List.of(
@@ -105,7 +104,8 @@ public class GoogleDocAdiaphKilometersFilesRepository implements AdiaphKilometer
               buildReplaceAllTextRequest("{{TOTAL}}", totalDistance.toString()));
       var batchUpdateRequest = new BatchUpdateDocumentRequest().setRequests(requests);
 
-      var result = docs.documents().batchUpdate(patientFileId, batchUpdateRequest).execute();
+      var result =
+          getDocs(userId).documents().batchUpdate(patientFileId, batchUpdateRequest).execute();
       log.info(result.toString());
     } catch (IOException e) {
 
@@ -126,15 +126,16 @@ public class GoogleDocAdiaphKilometersFilesRepository implements AdiaphKilometer
     return Month.of(month).getDisplayName(TextStyle.FULL, java.util.Locale.FRANCE);
   }
 
-  private void updateRows(String patientFileId, List<ActivityKilometers> activityKilometersList) {
-    insertMissingRows(patientFileId, activityKilometersList.size());
+  private void updateRows(
+      UserId userId, String patientFileId, List<ActivityKilometers> activityKilometersList) {
+    insertMissingRows(userId, patientFileId, activityKilometersList.size());
     IntStream.range(0, activityKilometersList.size())
-        .forEach(i -> updateRow(patientFileId, i + 1, activityKilometersList.get(i)));
+        .forEach(i -> updateRow(userId, patientFileId, i + 1, activityKilometersList.get(i)));
   }
 
-  private void insertMissingRows(String patientFileId, int activitiesCount) {
+  private void insertMissingRows(UserId userId, String patientFileId, int activitiesCount) {
     try {
-      var getDocResult = docs.documents().get(patientFileId).execute();
+      var getDocResult = getDocs(userId).documents().get(patientFileId).execute();
       var content = getDocResult.getBody().getContent();
       for (var row : content) {
         if (row.containsKey("table")) {
@@ -160,7 +161,8 @@ public class GoogleDocAdiaphKilometersFilesRepository implements AdiaphKilometer
                   .toList();
           try {
             var result =
-                docs.documents()
+                getDocs(userId)
+                    .documents()
                     .batchUpdate(
                         patientFileId,
                         new BatchUpdateDocumentRequest().setRequests(insertRowRequest))
@@ -178,9 +180,9 @@ public class GoogleDocAdiaphKilometersFilesRepository implements AdiaphKilometer
   }
 
   private void updateRow(
-      String patientFileId, int rowIndex, ActivityKilometers activityKilometers) {
+      UserId userId, String patientFileId, int rowIndex, ActivityKilometers activityKilometers) {
     var text = activityKilometers.activity().beginDate().format(WRITE_DATE_TIME_FORMATTER);
-    updateCell(patientFileId, text, rowIndex, 0);
+    updateCell(userId, patientFileId, text, rowIndex, 0);
     var trip =
         activityKilometers.from().address()
             + " - "
@@ -188,9 +190,10 @@ public class GoogleDocAdiaphKilometersFilesRepository implements AdiaphKilometer
             + " - "
             + activityKilometers.to().address();
     var distances = activityKilometers.distanceFrom() + "\n\n" + activityKilometers.distanceTo();
-    updateCell(patientFileId, trip, rowIndex, 1);
-    updateCell(patientFileId, distances, rowIndex, 2);
+    updateCell(userId, patientFileId, trip, rowIndex, 1);
+    updateCell(userId, patientFileId, distances, rowIndex, 2);
     updateCell(
+        userId,
         patientFileId,
         Long.valueOf(activityKilometers.distanceFrom() + activityKilometers.distanceTo())
             .toString(),
@@ -198,9 +201,10 @@ public class GoogleDocAdiaphKilometersFilesRepository implements AdiaphKilometer
         3);
   }
 
-  private void updateCell(String patientFileId, String text, int rowIndex, int cellIndex) {
+  private void updateCell(
+      UserId userId, String patientFileId, String text, int rowIndex, int cellIndex) {
     try {
-      var getDocResult = docs.documents().get(patientFileId).execute();
+      var getDocResult = getDocs(userId).documents().get(patientFileId).execute();
       var content = getDocResult.getBody().getContent();
       var tableRows =
           content.stream()
@@ -213,7 +217,8 @@ public class GoogleDocAdiaphKilometersFilesRepository implements AdiaphKilometer
       var startIndex = tableCells.get(cellIndex).getContent().getFirst().getStartIndex();
       var requests = List.of(buildInsertTextRequest(text, startIndex));
       var result =
-          docs.documents()
+          getDocs(userId)
+              .documents()
               .batchUpdate(patientFileId, new BatchUpdateDocumentRequest().setRequests(requests))
               .execute();
       log.info(result.toString());

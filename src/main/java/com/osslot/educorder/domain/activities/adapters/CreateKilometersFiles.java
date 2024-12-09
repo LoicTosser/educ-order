@@ -63,6 +63,7 @@ public class CreateKilometersFiles {
   private Optional<String> createAphjhKilometersFiles(
       CreatePatientKilometersFilesRequest createPatientKilometersFilesRequest) {
     return apajhKilometersFilesRepository.createPatientFilesFor(
+        createPatientKilometersFilesRequest.user().id(),
         createPatientKilometersFilesRequest.start(),
         createPatientKilometersFilesRequest.end(),
         createPatientKilometersFilesRequest.patient(),
@@ -72,6 +73,7 @@ public class CreateKilometersFiles {
   private Optional<String> createAdiaphKilometersFiles(
       CreatePatientKilometersFilesRequest createPatientKilometersFilesRequest) {
     return adiaphKilometersFilesRepository.createPatientFilesFor(
+        createPatientKilometersFilesRequest.user().id(),
         createPatientKilometersFilesRequest.start(),
         createPatientKilometersFilesRequest.end(),
         createPatientKilometersFilesRequest.patient(),

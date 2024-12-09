@@ -1,11 +1,7 @@
 package com.osslot.educorder.infrastructure.activities.legacy;
 
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.services.sheets.v4.Sheets;
-import com.google.api.services.sheets.v4.model.ValueRange;
-import com.osslot.educorder.application.EducOrderApplication;
 import com.osslot.educorder.domain.activities.model.Activity;
 import com.osslot.educorder.domain.patient.model.Patient;
 import com.osslot.educorder.domain.patient.repository.PatientRepository;
@@ -17,7 +13,6 @@ import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.List;
-import java.util.stream.IntStream;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -27,11 +22,7 @@ public class GoogleSheetActivityExporter {
       new DateTimeFormatterBuilder().appendPattern("[dd/MM/yyyy HH:mm:ss]").toFormatter();
 
   private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-  private static final String ACTIVITY_RANGE_READ = "Prises en Charge!A2:10000";
-  private static final String ACTIVITY_SHEET_NAME = "Prises en Charge!A";
 
-  private final Sheets service;
-  private final GoogleDriveService googleDriveService;
   private final PatientRepository patientRepository;
 
   public GoogleSheetActivityExporter(
@@ -40,55 +31,58 @@ public class GoogleSheetActivityExporter {
       GoogleDriveService googleDriveService)
       throws GeneralSecurityException, IOException {
     this.patientRepository = patientRepository;
-    this.service =
-        new Sheets.Builder(
-                GoogleNetHttpTransport.newTrustedTransport(),
-                JSON_FACTORY,
-                googleCredentials.getCredentials(GoogleNetHttpTransport.newTrustedTransport()))
-            .setApplicationName(EducOrderApplication.APPLICATION_NAME)
-            .build();
-    this.googleDriveService = googleDriveService;
+    //    this.service =
+    //        new Sheets.Builder(
+    //                GoogleNetHttpTransport.newTrustedTransport(),
+    //                JSON_FACTORY,
+    //
+    // googleCredentials.getCredentials(GoogleNetHttpTransport.newTrustedTransport()))
+    //            .setApplicationName(EducOrderApplication.APPLICATION_NAME)
+    //            .build();
+    //    this.googleDriveService = googleDriveService;
   }
 
-  public List<Activity> add(List<Activity> activities) {
-    try {
-      var existingValues =
-          service
-              .spreadsheets()
-              .values()
-              .get(googleDriveService.getFacturationSheetId().orElseThrow(), ACTIVITY_RANGE_READ)
-              .execute()
-              .getValues();
-      var firstIndex =
-          IntStream.range(0, existingValues.size())
-              .dropWhile(
-                  i ->
-                      !existingValues.get(i).isEmpty()
-                          && existingValues.get(i).getFirst() != null
-                          && !existingValues.get(i).getFirst().toString().isEmpty())
-              .findFirst()
-              .orElseThrow();
-
-      var newRange = String.format("%s%d:1000", ACTIVITY_SHEET_NAME, firstIndex + 2);
-      log.info("New range {}", newRange);
-      var rowsToInsert = activities.stream().map(this::toRow).toList();
-      var valueRange = new ValueRange();
-      valueRange.setValues(rowsToInsert);
-      valueRange.setRange(newRange);
-      var request =
-          service
-              .spreadsheets()
-              .values()
-              .update(
-                  googleDriveService.getFacturationSheetId().orElseThrow(), newRange, valueRange);
-      request.setValueInputOption("USER_ENTERED");
-      // TODO : Map response to Activity list
-      var response = request.execute();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-    return null;
-  }
+  //  public List<Activity> add(List<Activity> activities) {
+  //    try {
+  //      var existingValues =
+  //          service
+  //              .spreadsheets()
+  //              .values()
+  //              .get(googleDriveService.getFacturationSheetId().orElseThrow(),
+  // ACTIVITY_RANGE_READ)
+  //              .execute()
+  //              .getValues();
+  //      var firstIndex =
+  //          IntStream.range(0, existingValues.size())
+  //              .dropWhile(
+  //                  i ->
+  //                      !existingValues.get(i).isEmpty()
+  //                          && existingValues.get(i).getFirst() != null
+  //                          && !existingValues.get(i).getFirst().toString().isEmpty())
+  //              .findFirst()
+  //              .orElseThrow();
+  //
+  //      var newRange = String.format("%s%d:1000", ACTIVITY_SHEET_NAME, firstIndex + 2);
+  //      log.info("New range {}", newRange);
+  //      var rowsToInsert = activities.stream().map(this::toRow).toList();
+  //      var valueRange = new ValueRange();
+  //      valueRange.setValues(rowsToInsert);
+  //      valueRange.setRange(newRange);
+  //      var request =
+  //          service
+  //              .spreadsheets()
+  //              .values()
+  //              .update(
+  //                  googleDriveService.getFacturationSheetId().orElseThrow(), newRange,
+  // valueRange);
+  //      request.setValueInputOption("USER_ENTERED");
+  //      // TODO : Map response to Activity list
+  //      var response = request.execute();
+  //    } catch (IOException e) {
+  //      throw new RuntimeException(e);
+  //    }
+  //    return null;
+  //  }
 
   List<Object> toRow(Activity activity) {
     var patient = patientRepository.findById(activity.userId(), activity.patientId());
