@@ -36,7 +36,7 @@ dependencies {
     implementation libs.googleApiDocs
     implementation libs.googleMaps
     implementation libs.fireBaseAdmin
-    implementation libs.gcloudTestContainers
+    testImplementation libs.gcloudTestContainers
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

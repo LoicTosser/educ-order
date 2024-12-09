@@ -37,6 +37,7 @@ import org.springframework.stereotype.Service;
 public class GoogleCredentials {
   private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
   private static final String TOKENS_DIRECTORY_PATH = "tokens";
+  public static final String CLIENT_REGISTRATION_ID = "google";
 
   private final OAuth2AuthorizedClientService authorizedClientService;
 
@@ -87,7 +88,7 @@ public class GoogleCredentials {
       return Optional.empty();
     }
     OAuth2AuthorizedClient client =
-        authorizedClientService.loadAuthorizedClient("google", userId.id());
+        authorizedClientService.loadAuthorizedClient(CLIENT_REGISTRATION_ID, userId.id());
     OAuth2AccessToken accessToken = client.getAccessToken();
 
     com.google.auth.oauth2.GoogleCredentials googleCredentials =

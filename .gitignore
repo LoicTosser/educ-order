@@ -38,6 +38,7 @@ out/
 
 ### Google Secrets ###
 src/main/resources/credentials.json
+src/main/resources/firestore-credentials.json
 
 ### Other secrets ###
 secrets.yml

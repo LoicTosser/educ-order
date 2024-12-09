@@ -5,7 +5,6 @@ import com.osslot.educorder.domain.activities.model.Location;
 import com.osslot.educorder.domain.activities.model.RideDistance;
 import com.osslot.educorder.domain.activities.model.RideDistance.Ride;
 import com.osslot.educorder.domain.activities.repository.RideDistanceRepository;
-import com.osslot.educorder.infrastructure.activities.legacy.GoogleSheetRideDistanceService;
 import com.osslot.educorder.infrastructure.activities.repository.entity.RideDistanceEntity;
 import com.osslot.educorder.infrastructure.activities.service.RideDistanceService;
 import com.osslot.educorder.infrastructure.user.repository.entity.LocationEntity;
@@ -14,7 +13,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
-import javax.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,13 +26,6 @@ public class FirestoreRideDistanceRepository implements RideDistanceRepository {
 
   private final Firestore firestore;
   private final RideDistanceService rideDistanceService;
-  private final GoogleSheetRideDistanceService googleSheetRideDistanceRepository;
-
-  @PostConstruct
-  void persistInDB() {
-    var rideDistances = googleSheetRideDistanceRepository.findAllRideDistances();
-    rideDistances.forEach(this::addRideDistanceAndOpposite);
-  }
 
   @Override
   public Optional<RideDistance> findDistanceBetween(Location from, Location to) {

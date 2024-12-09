@@ -14,7 +14,6 @@ import com.osslot.educorder.infrastructure.activities.service.GoogleDriveService
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Duration;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.List;
@@ -30,7 +29,6 @@ public class GoogleSheetActivityExporter {
   private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
   private static final String ACTIVITY_RANGE_READ = "Prises en Charge!A2:10000";
   private static final String ACTIVITY_SHEET_NAME = "Prises en Charge!A";
-  public static final ZoneId PARIS_ZONE_ID = ZoneId.of("Europe/Paris");
 
   private final Sheets service;
   private final GoogleDriveService googleDriveService;

@@ -6,7 +6,6 @@ import com.osslot.educorder.domain.patient.model.Patient;
 import com.osslot.educorder.domain.patient.model.Patient.PatientId;
 import com.osslot.educorder.domain.patient.repository.PatientRepository;
 import com.osslot.educorder.domain.user.model.User.UserId;
-import com.osslot.educorder.infrastructure.patient.legacy.GoogleSheetPatientRepository;
 import com.osslot.educorder.infrastructure.patient.repository.entity.PatientEntity;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +19,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Nullable;
@@ -36,17 +34,6 @@ public class FirestorePatientRepository implements PatientRepository {
   private final Map<String, Map<String, Patient>> patientsByIdsCache = new ConcurrentHashMap<>();
 
   private final Firestore firestore;
-  private final GoogleSheetPatientRepository googleSheetPatientRepository;
-
-  @PostConstruct
-  public void persistInDB() {
-    var patients = googleSheetPatientRepository.getAllPatients();
-    patients.forEach(
-        patient -> {
-          var patientEntity = PatientEntity.fromDomain(patient);
-          firestore.collection(PatientEntity.PATH).document().set(patientEntity);
-        });
-  }
 
   @Override
   public List<Patient> findAllByUserId(UserId userId) {

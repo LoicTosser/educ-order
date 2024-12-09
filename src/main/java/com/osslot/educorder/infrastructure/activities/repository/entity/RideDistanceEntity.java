@@ -17,7 +17,7 @@ import lombok.experimental.SuperBuilder;
 public class RideDistanceEntity extends MultiTenantEntity {
 
   private static final String CURRENT_VERSION = "0.0.1";
-  public static final String PATH = "ride-distances";
+  public static final String PATH = "ride_distances";
 
   private LocationEntity from;
   private LocationEntity to;
