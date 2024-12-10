@@ -22,11 +22,11 @@ spring:
               - https://www.googleapis.com/auth/userinfo.email
               - https://www.googleapis.com/auth/userinfo.profile
               - openid
-      provider:
-        google:
-          authorization-uri: https://accounts.google.com/o/oauth2/auth
-          token-uri: https://oauth2.googleapis.com/token
-          user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+        provider:
+            google:
+                authorization-uri: https://accounts.google.com/o/oauth2/auth?access_type=offline&prompt=consent
+                token-uri: https://oauth2.googleapis.com/token
+                user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
 
 abby:
   api:
