@@ -13,7 +13,7 @@ googleApiDocs = { group = "com.google.apis", name = "google-api-services-docs", 
 googleMaps = { group = "com.google.maps", name = "google-maps-services", version = "2.2.0" }
 fireBaseAdmin = { group = "com.google.firebase", name = "firebase-admin", version = "9.4.2" }
 gcloudTestContainers = { group = "org.testcontainers", name = "gcloud", version = "1.20.4" }
-instancio =  { group="org.instancio", name="instancio-junit", version="5.2.0"}
+instancio =  { group="org.instancio", name="instancio-junit", version="5.3.0"}
 [bundles]
 
 [plugins]
