@@ -35,13 +35,13 @@ import org.springframework.stereotype.Service;
 public class GoogleAgendaCalendarRepository implements CalendarRepository {
 
   private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-  private final GoogleCredentials googleCredentials;
+  private final GoogleCredentialsService googleCredentialsService;
   private final ActivityMapper activityMapper;
 
   public GoogleAgendaCalendarRepository(
-      GoogleCredentials googleCredentials, ActivityMapper activityMapper) {
+      GoogleCredentialsService googleCredentialsService, ActivityMapper activityMapper) {
     this.activityMapper = activityMapper;
-    this.googleCredentials = googleCredentials;
+    this.googleCredentialsService = googleCredentialsService;
   }
 
   @Override
@@ -107,7 +107,7 @@ public class GoogleAgendaCalendarRepository implements CalendarRepository {
     } catch (GeneralSecurityException | IOException e) {
       return new EventsResponse(List.of(), "");
     }
-    Optional<Credential> credentials = googleCredentials.getCredentials(userId);
+    Optional<Credential> credentials = googleCredentialsService.getCredentials(userId);
     if (credentials.isEmpty()) {
       return new EventsResponse(List.of(), "");
     }
@@ -155,7 +155,7 @@ public class GoogleAgendaCalendarRepository implements CalendarRepository {
     } catch (GeneralSecurityException | IOException e) {
       return new EventsResponse(List.of(), "");
     }
-    Optional<Credential> credentials = googleCredentials.getCredentials(user);
+    Optional<Credential> credentials = googleCredentialsService.getCredentials(user);
     if (credentials.isEmpty()) {
       return new EventsResponse(List.of(), "");
     }
@@ -177,6 +177,7 @@ public class GoogleAgendaCalendarRepository implements CalendarRepository {
                 .setSyncToken(syncToken)
                 .execute();
         nextSyncToken = eventsResponse.getNextSyncToken();
+
         if (eventsResponse.getItems().isEmpty()) {
           break;
         }

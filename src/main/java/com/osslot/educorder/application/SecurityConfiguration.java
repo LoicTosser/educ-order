@@ -46,7 +46,12 @@ public class SecurityConfiguration {
       HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
     http.csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(
-            authorizedRequests -> authorizedRequests.anyRequest().authenticated())
+            authorizedRequests ->
+                authorizedRequests
+                    .requestMatchers("/actuator/**")
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated())
         .cors(c -> c.configurationSource(corsConfigurationSource))
         .oauth2Login(
             oauth2 -> {

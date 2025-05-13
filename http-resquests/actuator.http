@@ -1,0 +1,23 @@
+### liveness
+GET http://localhost:8080/actuator/health/liveness HTTP/1.1
+
+### readiness
+GET http://localhost:8080/actuator/health/readiness HTTP/1.1
+
+### Actuator metrics
+GET http://localhost:8080/actuator/metrics HTTP/1.1
+
+### Actuator bearns
+GET http://localhost:8080/actuator/beans HTTP/1.1
+
+### Actuator health
+GET http://localhost:8080/actuator/health
+
+### Actuator
+GET http://localhost:8080/actuator
+
+### Actuator info prod
+GET https://educ-order-683700653292.europe-west9.run.app/actuator/info
+
+### Actuator liveness prod
+GET https://educ-order-683700653292.europe-west9.run.app/actuator/health/liveness HTTP/1.1

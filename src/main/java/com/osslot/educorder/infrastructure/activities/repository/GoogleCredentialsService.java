@@ -15,13 +15,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
 @Slf4j
-public class GoogleCredentials {
+public class GoogleCredentialsService {
   private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
   public static final String CLIENT_REGISTRATION_ID = "google";
 

@@ -7,7 +7,7 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.osslot.educorder.domain.patient.model.Patient;
 import com.osslot.educorder.domain.user.model.User.UserId;
-import com.osslot.educorder.infrastructure.activities.repository.GoogleCredentials;
+import com.osslot.educorder.infrastructure.activities.repository.GoogleCredentialsService;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.ZonedDateTime;
@@ -39,13 +39,13 @@ public class GoogleDriveService {
   public static final String ADIAPH_KILOMETERS_TEMPLATE = "Frais_kilo_ADIAPH";
   private final String rootFolderId;
   private final Map<GoogleFileDescriptor, String> fileIds = new ConcurrentHashMap<>();
-  private final GoogleCredentials googleCredentials;
+  private final GoogleCredentialsService googleCredentialsService;
 
   public GoogleDriveService(
       @Value("${google.drive.root-folder-id}") String rootFolderId,
-      GoogleCredentials googleCredentials) {
+      GoogleCredentialsService googleCredentialsService) {
     this.rootFolderId = rootFolderId;
-    this.googleCredentials = googleCredentials;
+    this.googleCredentialsService = googleCredentialsService;
   }
 
   private Drive getDriveService(UserId userId) {
@@ -53,7 +53,7 @@ public class GoogleDriveService {
       return new Drive.Builder(
               GoogleNetHttpTransport.newTrustedTransport(),
               JSON_FACTORY,
-              googleCredentials
+              googleCredentialsService
                   .getCredentials(userId)
                   .orElseThrow(() -> new IllegalStateException("No credentials")))
           .build();

@@ -31,12 +31,12 @@ public class GoogleSheetApajhKilometersFilesRepository implements ApajhKilometer
   private static final String RANGE_DATA = "data!A2:D2";
   private static final String APAJH_MONTH_KILOMETERS_RANGE = "kilomètres!A2:Z1000";
   private final GoogleDriveService googleDriveService;
-  private final GoogleCredentials googleCredentials;
+  private final GoogleCredentialsService googleCredentialsService;
 
   public GoogleSheetApajhKilometersFilesRepository(
-      GoogleCredentials googleCredentials, GoogleDriveService googleDriveService) {
+      GoogleCredentialsService googleCredentialsService, GoogleDriveService googleDriveService) {
     this.googleDriveService = googleDriveService;
-    this.googleCredentials = googleCredentials;
+    this.googleCredentialsService = googleCredentialsService;
   }
 
   @Override
@@ -79,7 +79,7 @@ public class GoogleSheetApajhKilometersFilesRepository implements ApajhKilometer
     return new Sheets.Builder(
             transport,
             JSON_FACTORY,
-            googleCredentials
+            googleCredentialsService
                 .getCredentials(userId)
                 .orElseThrow(() -> new IllegalStateException("Credentials not found")))
         .setApplicationName(EducOrderApplication.APPLICATION_NAME)

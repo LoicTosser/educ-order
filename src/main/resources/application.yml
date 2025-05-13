@@ -14,6 +14,7 @@ spring:
         registration:
           google:
             client-id: 683700653292-7f4750iff8ujelfare6s56qbq0416jq9.apps.googleusercontent.com
+            client-secret: ${sm://google-client-secret}
             scope:
               - https://www.googleapis.com/auth/spreadsheets
               - https://www.googleapis.com/auth/calendar.events
@@ -27,7 +28,27 @@ spring:
                 authorization-uri: https://accounts.google.com/o/oauth2/auth?access_type=offline&prompt=consent
                 token-uri: https://oauth2.googleapis.com/token
                 user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+  config:
+    import: sm://
+
+management:
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+
+    metrics:
+      access: unrestricted
+
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+
 
 abby:
   api:
     key: default-value
+firestore:
+  credentials: ${FIRESTORE_CREDENTIALS:default-value}

@@ -27,22 +27,23 @@ public class CreateKilometersFiles {
   private final PatientService patientService;
 
   public void createAphjhKilometersFiles(User user, ZonedDateTime start, ZonedDateTime end) {
-    createKilometersFiles(user, start, end, this::createAphjhKilometersFiles);
+    createKilometersFiles(user, start, end, Institution.APAJH, this::createAphjhKilometersFiles);
   }
 
   public void createAdiaphKilometersFiles(User user, ZonedDateTime start, ZonedDateTime end) {
-    createKilometersFiles(user, start, end, this::createAdiaphKilometersFiles);
+    createKilometersFiles(user, start, end, Institution.ADIAPH, this::createAdiaphKilometersFiles);
   }
 
   private void createKilometersFiles(
       User user,
       ZonedDateTime start,
       ZonedDateTime end,
+      Institution institution,
       Function<CreatePatientKilometersFilesRequest, Optional<String>>
           createPatientKilometersFiles) {
     var activitiesKilometersPerPatient =
         activityKilometersService.getActivitiesKilometersPerPatientBetween(
-            user.id(), start, end, Institution.ADIAPH);
+            user.id(), start, end, institution);
     activitiesKilometersPerPatient.forEach(
         (patientId, activities) -> {
           var patient = patientService.findById(user.id(), patientId);

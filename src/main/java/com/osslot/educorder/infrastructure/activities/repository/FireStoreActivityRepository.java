@@ -120,20 +120,24 @@ public class FireStoreActivityRepository implements ActivityRepository {
             .collect(Collectors.groupingBy(it -> counter.getAndIncrement() / groupSize));
     // Create a list containing the lists of chunks
     List<List<Activity>> activitiesChunks = new ArrayList<>(mapOfChunks.values());
-    return activitiesChunks.stream()
-        .flatMap(
-            activitiesChunk -> {
-              var activityEventIds = activitiesChunk.stream().map(Activity::eventId).toList();
-              var activitiesCollection = firestore.collection(ActivityEntity.PATH);
-              Query query = activitiesCollection.whereIn("eventId", activityEventIds);
-              try {
-                return query.get().get().getDocuments().stream();
-              } catch (InterruptedException | ExecutionException e) {
-                log.error("Error fetching activities", e);
-              }
-              return Stream.empty();
-            })
-        .toList();
+    List<QueryDocumentSnapshot> queryDocumentSnapshots =
+        activitiesChunks.stream()
+            .flatMap(
+                activitiesChunk -> {
+                  var activityEventIds = activitiesChunk.stream().map(Activity::eventId).toList();
+                  var activitiesCollection = firestore.collection(ActivityEntity.PATH);
+                  log.info("Searched event Ids {}", String.join(",", activityEventIds));
+                  Query query = activitiesCollection.whereIn("eventId", activityEventIds);
+                  try {
+                    return query.get().get().getDocuments().stream();
+                  } catch (InterruptedException | ExecutionException e) {
+                    log.error("Error fetching activities", e);
+                  }
+                  return Stream.empty();
+                })
+            .toList();
+    log.info("Found {} activities", queryDocumentSnapshots.size());
+    return queryDocumentSnapshots;
   }
 
   private Map<DocumentReference, Activity> getActivitiesByDocumentReference(

@@ -6,7 +6,6 @@ import com.osslot.educorder.domain.activities.repository.CalendarRepository.Fetc
 import com.osslot.educorder.domain.activities.service.ImportActivitiesService;
 import com.osslot.educorder.domain.activities.service.ImportActivitiesService.SynchronizeCalendarRequest;
 import com.osslot.educorder.domain.user.adapters.UserSettingsAdapter;
-import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,16 +26,6 @@ public class ImportActivitiesFromCalendar {
     }
     var calendarId = userSettings.orElseThrow().googleCalendarSettings().calendarId();
     return importActivitiesService.importActivities(userId, calendarId, year, month);
-  }
-
-  public FetchCalendarActivitiesResponse importActivities(
-      UserId userId, ZonedDateTime start, ZonedDateTime end) {
-    var userSettings = userSettingsAdapter.findByUserId(userId);
-    if (userSettings.isEmpty()) {
-      return new FetchCalendarActivitiesResponse(List.of(), null, userId);
-    }
-    var calendarId = userSettings.orElseThrow().googleCalendarSettings().calendarId();
-    return importActivitiesService.importActivities(userId, calendarId, start, end);
   }
 
   public void syncActivities() {

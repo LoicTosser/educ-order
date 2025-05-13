@@ -39,12 +39,12 @@ public class GoogleDocAdiaphKilometersFilesRepository implements AdiaphKilometer
   private static final DateTimeFormatter WRITE_DATE_TIME_FORMATTER =
       DateTimeFormatter.ofPattern("dd/MM/yyyy");
   private final GoogleDriveService googleDriveService;
-  private final GoogleCredentials googleCredentials;
+  private final GoogleCredentialsService googleCredentialsService;
 
   public GoogleDocAdiaphKilometersFilesRepository(
-      GoogleCredentials googleCredentials, GoogleDriveService googleDriveService) {
+      GoogleCredentialsService googleCredentialsService, GoogleDriveService googleDriveService) {
     this.googleDriveService = googleDriveService;
-    this.googleCredentials = googleCredentials;
+    this.googleCredentialsService = googleCredentialsService;
   }
 
   @NotNull
@@ -53,7 +53,7 @@ public class GoogleDocAdiaphKilometersFilesRepository implements AdiaphKilometer
       return new Docs.Builder(
               GoogleNetHttpTransport.newTrustedTransport(),
               JSON_FACTORY,
-              googleCredentials
+              googleCredentialsService
                   .getCredentials(userId)
                   .orElseThrow(() -> new RuntimeException("No credentials")))
           .setApplicationName(EducOrderApplication.APPLICATION_NAME)

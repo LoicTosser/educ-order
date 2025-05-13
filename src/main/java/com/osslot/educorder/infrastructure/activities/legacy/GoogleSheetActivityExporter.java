@@ -5,7 +5,7 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.osslot.educorder.domain.activities.model.Activity;
 import com.osslot.educorder.domain.patient.model.Patient;
 import com.osslot.educorder.domain.patient.repository.PatientRepository;
-import com.osslot.educorder.infrastructure.activities.repository.GoogleCredentials;
+import com.osslot.educorder.infrastructure.activities.repository.GoogleCredentialsService;
 import com.osslot.educorder.infrastructure.activities.service.GoogleDriveService;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -26,7 +26,7 @@ public class GoogleSheetActivityExporter {
   private final PatientRepository patientRepository;
 
   public GoogleSheetActivityExporter(
-      GoogleCredentials googleCredentials,
+      GoogleCredentialsService googleCredentialsService,
       PatientRepository patientRepository,
       GoogleDriveService googleDriveService)
       throws GeneralSecurityException, IOException {

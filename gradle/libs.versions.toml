@@ -14,6 +14,7 @@ googleMaps = { group = "com.google.maps", name = "google-maps-services", version
 fireBaseAdmin = { group = "com.google.firebase", name = "firebase-admin", version = "9.4.2" }
 gcloudTestContainers = { group = "org.testcontainers", name = "gcloud", version = "1.20.4" }
 instancio =  { group="org.instancio", name="instancio-junit", version="5.2.0"}
+gcloudSecretManager = { group = "com.google.cloud", name = "spring-cloud-gcp-starter-secretmanager", version = "5.9.0" }
 [bundles]
 
 [plugins]

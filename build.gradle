@@ -27,6 +27,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     implementation libs.googleApiClient
     implementation libs.googleOauthClientJetty
@@ -36,6 +37,7 @@ dependencies {
     implementation libs.googleApiDocs
     implementation libs.googleMaps
     implementation libs.fireBaseAdmin
+    implementation libs.gcloudSecretManager
     testImplementation libs.gcloudTestContainers
 
     compileOnly 'org.projectlombok:lombok'
